@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width"/>
   <title>@ViewBag.Title | RigaMetro</title>
-  <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon.ico">
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"/>
   <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" href="~/css/site.css" />
@@ -19,6 +19,9 @@
       <ul class="navbar-nav d-flex gap-4 align-items-center">
         <li class="nav-item">
           <a class="nav-link text-white hover-underline-animation" asp-action="History">History</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white hover-underline-animation" asp-action="DebugData">Debug</a>
         </li>
         <li class="nav-item">
           <span class="navbar-text text-white">@DateTime.Now.ToString("HH:mm")</span>

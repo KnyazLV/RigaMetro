@@ -1,0 +1,53 @@
+﻿@model RigaMetro.Models.ViewModels.MapDataViewModel
+@{
+  ViewBag.Title = "Debug Data";
+}
+
+<h1>Содержимое базы данных</h1>
+
+<h2>Линии</h2>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>LineID</th>
+    <th>Название</th>
+    <th>Цвет</th>
+  </tr>
+  </thead>
+  <tbody>
+  @foreach (var line in Model.Lines) {
+    <tr>
+      <td>@line.LineID</td>
+      <td>@line.Name</td>
+      <td>
+        <span style="display:inline-block;width:20px;height:20px;
+                                 background:@line.Color;border:1px solid #000;">
+        </span>
+        @line.Color
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>
+
+<h2>Станции</h2>
+<table class="table table-striped">
+  <thead>
+  <tr>
+    <th>StationID</th>
+    <th>Название</th>
+    <th>Широта</th>
+    <th>Долгота</th>
+  </tr>
+  </thead>
+  <tbody>
+  @foreach (var station in Model.Stations) {
+    <tr>
+      <td>@station.StationID</td>
+      <td>@station.Name</td>
+      <td>@station.Latitude</td>
+      <td>@station.Longitude</td>
+    </tr>
+  }
+  </tbody>
+</table>

@@ -1,7 +1,8 @@
 ﻿@{
-    ViewBag.Title = "Map";
+    ViewBag.Title   = "Map";
+    var token       = (string)ViewData["MapboxToken"];
+    var mapDataJson = (string)ViewData["MapDataJson"];
 }
-
 <div id="map" style="width: 100%; height: 800px;"></div>
 
 @section Scripts {
@@ -13,6 +14,59 @@
             style: 'mapbox://styles/mapbox/dark-v11',
             center: [24.105078, 56.946285],
             zoom: 10
+        });
+
+        const mapData = JSON.parse('@Html.Raw(mapDataJson)');
+
+        map.on('load', () => {
+            const stationsGeoJson = {
+                type: 'FeatureCollection',
+                features: mapData.Stations.map(s => ({
+                    type: 'Feature',
+                    properties: { name: s.Name },
+                    geometry: {
+                        type: 'Point',
+                        coordinates: [s.Longitude, s.Latitude]
+                    }
+                }))
+            };
+
+            map.addSource('stations', {
+                type: 'geojson',
+                data: stationsGeoJson
+            });
+
+            map.addLayer({
+                id: 'stations',
+                type: 'circle',
+                source: 'stations',
+                paint: {
+                    'circle-color': '#ffffff',
+                    'circle-radius': 8,
+                    'circle-stroke-width': 3,
+                    'circle-stroke-color': '#000000'
+                }
+            });
+
+            const popup = new mapboxgl.Popup({
+                closeButton: false,
+                closeOnClick: false,
+                className: 'transparent-popup'
+            });
+
+            map.on('mouseenter', 'stations', e => {
+                map.getCanvas().style.cursor = 'pointer';
+                const coords = e.features[0].geometry.coordinates.slice();
+                const name   = e.features[0].properties.name;
+                popup.setLngLat(coords)
+                    .setHTML(`<div class="station-name">${name}</div>`)
+                    .addTo(map);
+            });
+
+            map.on('mouseleave', 'stations', () => {
+                map.getCanvas().style.cursor = '';
+                popup.remove();
+            });
         });
     </script>
 }
