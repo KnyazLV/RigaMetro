@@ -16,68 +16,63 @@ public class HomeController : Controller {
         _configuration = configuration;
         _db = db;
     }
-
-    public async Task<IActionResult> Index()
-    {
+    
+    public async Task<IActionResult> Index() {
+        var model = await CreateMapDataViewModel();
         ViewData["MapboxToken"] = _configuration["MapBox:ApiKey"];
-
-        var lines = await _db.Lines
-            .Select(l => new LineViewModel {
-                LineID = l.LineID,
-                Name   = l.Name,
-                Color  = l.Color
-            })
-            .ToListAsync();
-
-        var stations = await _db.Stations
-            .Select(s => new StationViewModel {
-                StationID = s.StationID,
-                Name      = s.Name,
-                Latitude  = s.Latitude,
-                Longitude = s.Longitude
-            })
-            .ToListAsync();
-
-        var model = new MapDataViewModel {
-            Lines    = lines,
-            Stations = stations
-        };
-
         ViewData["MapDataJson"] = System.Text.Json.JsonSerializer.Serialize(model);
         return View(model);
     }
-    
+
     public async Task<IActionResult> DebugData() {
+        var model = await CreateMapDataViewModel();
+        return View(model);
+    }
+
+    private async Task<MapDataViewModel> CreateMapDataViewModel() {
+        
+        var times = await _db.TimeBetweenStations
+            .AsNoTracking()
+            .Select(t => new TimeBetweenViewModel
+            {
+                FromStationID = t.FromStationID,
+                ToStationID   = t.ToStationID,
+                DistanceM     = t.DistanceM,
+                TimeSeconds   = t.TimeSeconds
+            })
+            .ToListAsync();
+
         var lines = await _db.Lines
             .AsNoTracking()
-            .Select(l => new LineViewModel
+            .Select(l => new LineWithStationsViewModel
             {
                 LineID = l.LineID,
                 Name   = l.Name,
-                Color  = l.Color
+                Color  = l.Color,
+                Stations = l.LineStations
+                    .OrderBy(ls => ls.StationOrder)
+                    .Select(ls => new StationViewModel
+                    {
+                        StationID = ls.StationID,
+                        Name      = ls.Station.Name,
+                        Latitude  = ls.Station.Latitude,
+                        Longitude = ls.Station.Longitude,
+                        Order     = ls.StationOrder
+                    })
+                    .ToList()
             })
             .ToListAsync();
 
-        var stations = await _db.Stations
-            .AsNoTracking()
-            .Select(s => new StationViewModel
-            {
-                StationID = s.StationID,
-                Name      = s.Name,
-                Latitude  = s.Latitude,
-                Longitude = s.Longitude
-            })
-            .ToListAsync();
-
-        var model = new MapDataViewModel {
-            Lines    = lines,
-            Stations = stations
+        return new MapDataViewModel {
+            Lines        = lines,
+            TimeBetween  = times
         };
-
-        return View(model);
     }
+
+
     
     public IActionResult History() {
         return View();
     }
+    
 }

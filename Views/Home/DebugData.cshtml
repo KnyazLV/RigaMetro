@@ -5,49 +5,52 @@
 
 <h1>Содержимое базы данных</h1>
 
-<h2>Линии</h2>
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>LineID</th>
-    <th>Название</th>
-    <th>Цвет</th>
-  </tr>
-  </thead>
-  <tbody>
-  @foreach (var line in Model.Lines) {
+@foreach (var line in Model.Lines) {
+  <h2>Линия: @line.Name (@line.Color)</h2>
+  <table class="table table-striped">
+    <thead>
     <tr>
-      <td>@line.LineID</td>
-      <td>@line.Name</td>
-      <td>
-        <span style="display:inline-block;width:20px;height:20px;
-                                 background:@line.Color;border:1px solid #000;">
-        </span>
-        @line.Color
-      </td>
+      <th>Order</th>
+      <th>StationID</th>
+      <th>Название</th>
+      <th>Широта</th>
+      <th>Долгота</th>
     </tr>
-  }
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+    @foreach (var s in line.Stations) {
+      <tr>
+        <td>@s.Order</td>
+        <td>@s.StationID</td>
+        <td>@s.Name</td>
+        <td>@s.Latitude</td>
+        <td>@s.Longitude</td>
+      </tr>
+    }
+    </tbody>
+  </table>
+}
 
-<h2>Станции</h2>
-<table class="table table-striped">
-  <thead>
-  <tr>
-    <th>StationID</th>
-    <th>Название</th>
-    <th>Широта</th>
-    <th>Долгота</th>
-  </tr>
-  </thead>
-  <tbody>
-  @foreach (var station in Model.Stations) {
+@if (Model.TimeBetween != null && Model.TimeBetween.Any()) {
+  <h2>Дистанции между станциями</h2>
+  <table class="table table-striped">
+    <thead>
     <tr>
-      <td>@station.StationID</td>
-      <td>@station.Name</td>
-      <td>@station.Latitude</td>
-      <td>@station.Longitude</td>
+      <th>From StationID</th>
+      <th>To StationID</th>
+      <th>Distance (m)</th>
+      <th>Time (sec)</th>
     </tr>
-  }
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+    @foreach (var t in Model.TimeBetween) {
+      <tr>
+        <td>@t.FromStationID</td>
+        <td>@t.ToStationID</td>
+        <td>@t.DistanceM</td>
+        <td>@t.TimeSeconds</td>
+      </tr>
+    }
+    </tbody>
+  </table>
+}

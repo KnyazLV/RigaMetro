@@ -24,7 +24,7 @@ public class MetroDbContext : DbContext {
             property.SetColumnType("timestamp without time zone");
         }
 
-        // Составные ключи
+        // Составные ключи 
         modelBuilder.Entity<LineStation>().HasKey(ls => new { ls.LineID, ls.StationID });
         modelBuilder.Entity<TimeBetweenStations>().HasKey(t => new { t.FromStationID, t.ToStationID });
         modelBuilder.Entity<ScheduleStop>().HasKey(ss => new { ss.ScheduleID, ss.StationOrder });
