@@ -1,7 +1,11 @@
-﻿namespace RigaMetro.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RigaMetro.Models;
 
 public class Line {
-    public int LineID { get; set; }
+    [Key]
+    [MaxLength(8)]
+    public string LineID { get; set; } = "";
     public string Name { get; set; } = "";
     public string Color { get; set; } = "";
     public bool IsClockwiseDirection { get; set; }

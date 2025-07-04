@@ -1,8 +1,8 @@
 ﻿namespace RigaMetro.Models.ViewModels;
 
 public class LineStationViewModel {
-    public int LineID { get; set; }
-    public int StationID { get; set; }
+    public string LineID { get; set; } = "";
+    public string StationID { get; set; } = "";
     public int StationOrder { get; set; }
     
     public string LineName { get; set; } = "";

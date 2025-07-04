@@ -12,8 +12,8 @@ using RigaMetro.Data;
 namespace RigaMetro.Migrations
 {
     [DbContext(typeof(MetroDbContext))]
-    [Migration("20250702090106_InitialCreateWithTimestampWithoutTimeZone")]
-    partial class InitialCreateWithTimestampWithoutTimeZone
+    [Migration("20250704074448_InitialStringKeys")]
+    partial class InitialStringKeys
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,11 +27,9 @@ namespace RigaMetro.Migrations
 
             modelBuilder.Entity("RigaMetro.Models.Line", b =>
                 {
-                    b.Property<int>("LineID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("LineID"));
+                    b.Property<string>("LineID")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<string>("Color")
                         .IsRequired()
@@ -57,7 +55,7 @@ namespace RigaMetro.Migrations
                     b.HasData(
                         new
                         {
-                            LineID = 1,
+                            LineID = "LN01",
                             Color = "#FF0000",
                             EndWorkTime = new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified),
                             IsClockwiseDirection = true,
@@ -80,6 +78,9 @@ namespace RigaMetro.Migrations
                     b.Property<int>("LineID")
                         .HasColumnType("integer");
 
+                    b.Property<string>("LineID1")
+                        .HasColumnType("character varying(8)");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("timestamp without time zone");
 
@@ -88,18 +89,18 @@ namespace RigaMetro.Migrations
 
                     b.HasKey("ScheduleID");
 
-                    b.HasIndex("LineID");
+                    b.HasIndex("LineID1");
 
                     b.ToTable("LineSchedules");
                 });
 
             modelBuilder.Entity("RigaMetro.Models.LineStation", b =>
                 {
-                    b.Property<int>("LineID")
-                        .HasColumnType("integer");
+                    b.Property<string>("LineID")
+                        .HasColumnType("character varying(8)");
 
-                    b.Property<int>("StationID")
-                        .HasColumnType("integer");
+                    b.Property<string>("StationID")
+                        .HasColumnType("character varying(8)");
 
                     b.Property<int>("StationOrder")
                         .HasColumnType("integer");
@@ -113,62 +114,62 @@ namespace RigaMetro.Migrations
                     b.HasData(
                         new
                         {
-                            LineID = 1,
-                            StationID = 1,
+                            LineID = "LN01",
+                            StationID = "ST101",
                             StationOrder = 1
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 2,
+                            LineID = "LN01",
+                            StationID = "ST102",
                             StationOrder = 2
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 3,
+                            LineID = "LN01",
+                            StationID = "ST103",
                             StationOrder = 3
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 4,
+                            LineID = "LN01",
+                            StationID = "ST104",
                             StationOrder = 4
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 5,
+                            LineID = "LN01",
+                            StationID = "ST105",
                             StationOrder = 5
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 6,
+                            LineID = "LN01",
+                            StationID = "ST106",
                             StationOrder = 6
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 7,
+                            LineID = "LN01",
+                            StationID = "ST107",
                             StationOrder = 7
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 8,
+                            LineID = "LN01",
+                            StationID = "ST108",
                             StationOrder = 8
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 9,
+                            LineID = "LN01",
+                            StationID = "ST109",
                             StationOrder = 9
                         },
                         new
                         {
-                            LineID = 1,
-                            StationID = 10,
+                            LineID = "LN01",
+                            StationID = "ST110",
                             StationOrder = 10
                         });
                 });
@@ -190,20 +191,21 @@ namespace RigaMetro.Migrations
                     b.Property<int>("StationID")
                         .HasColumnType("integer");
 
+                    b.Property<string>("StationID1")
+                        .HasColumnType("character varying(8)");
+
                     b.HasKey("ScheduleID", "StationOrder");
 
-                    b.HasIndex("StationID");
+                    b.HasIndex("StationID1");
 
                     b.ToTable("ScheduleStops");
                 });
 
             modelBuilder.Entity("RigaMetro.Models.Station", b =>
                 {
-                    b.Property<int>("StationID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("StationID"));
+                    b.Property<string>("StationID")
+                        .HasMaxLength(8)
+                        .HasColumnType("character varying(8)");
 
                     b.Property<double>("Latitude")
                         .HasColumnType("double precision");
@@ -222,70 +224,70 @@ namespace RigaMetro.Migrations
                     b.HasData(
                         new
                         {
-                            StationID = 1,
+                            StationID = "ST101",
                             Latitude = 57.003383999999997,
                             Longitude = 24.118736999999999,
                             Name = "Sarkandaugava"
                         },
                         new
                         {
-                            StationID = 2,
+                            StationID = "ST102",
                             Latitude = 56.991002000000002,
                             Longitude = 24.122138,
                             Name = "Rupnica RER"
                         },
                         new
                         {
-                            StationID = 3,
+                            StationID = "ST103",
                             Latitude = 56.974578999999999,
                             Longitude = 24.111671000000001,
                             Name = "Ramulu iela"
                         },
                         new
                         {
-                            StationID = 4,
+                            StationID = "ST104",
                             Latitude = 56.964005999999998,
                             Longitude = 24.106183000000001,
                             Name = "Petersala"
                         },
                         new
                         {
-                            StationID = 5,
+                            StationID = "ST105",
                             Latitude = 56.956935000000001,
                             Longitude = 24.101257,
                             Name = "Kronvalda parks"
                         },
                         new
                         {
-                            StationID = 6,
+                            StationID = "ST106",
                             Latitude = 56.947561,
                             Longitude = 24.119751999999998,
                             Name = "Stacijas laukums"
                         },
                         new
                         {
-                            StationID = 7,
+                            StationID = "ST107",
                             Latitude = 56.933002999999999,
                             Longitude = 24.121713,
                             Name = "Zaķusala"
                         },
                         new
                         {
-                            StationID = 8,
+                            StationID = "ST108",
                             Latitude = 56.919696999999999,
                             Longitude = 24.098175999999999,
                             Name = "Straume"
                         },
                         new
                         {
-                            StationID = 9,
+                            StationID = "ST109",
                             Latitude = 56.912930000000003,
                             Longitude = 24.069526,
                             Name = "Dzintars"
                         },
                         new
                         {
-                            StationID = 10,
+                            StationID = "ST110",
                             Latitude = 56.898448000000002,
                             Longitude = 24.092072999999999,
                             Name = "Ziepniekkalns"
@@ -294,11 +296,11 @@ namespace RigaMetro.Migrations
 
             modelBuilder.Entity("RigaMetro.Models.TimeBetweenStations", b =>
                 {
-                    b.Property<int>("FromStationID")
-                        .HasColumnType("integer");
+                    b.Property<string>("FromStationID")
+                        .HasColumnType("character varying(8)");
 
-                    b.Property<int>("ToStationID")
-                        .HasColumnType("integer");
+                    b.Property<string>("ToStationID")
+                        .HasColumnType("character varying(8)");
 
                     b.Property<int>("DistanceM")
                         .HasColumnType("integer");
@@ -327,12 +329,15 @@ namespace RigaMetro.Migrations
                     b.Property<int>("LineID")
                         .HasColumnType("integer");
 
+                    b.Property<string>("LineID1")
+                        .HasColumnType("character varying(8)");
+
                     b.Property<string>("TrainName")
                         .HasColumnType("text");
 
                     b.HasKey("TrainID");
 
-                    b.HasIndex("LineID");
+                    b.HasIndex("LineID1");
 
                     b.ToTable("Trains");
                 });
@@ -359,9 +364,7 @@ namespace RigaMetro.Migrations
                 {
                     b.HasOne("RigaMetro.Models.Line", "Line")
                         .WithMany("LineSchedules")
-                        .HasForeignKey("LineID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LineID1");
 
                     b.Navigation("Line");
                 });
@@ -395,9 +398,7 @@ namespace RigaMetro.Migrations
 
                     b.HasOne("RigaMetro.Models.Station", "Station")
                         .WithMany()
-                        .HasForeignKey("StationID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("StationID1");
 
                     b.Navigation("Schedule");
 
@@ -427,9 +428,7 @@ namespace RigaMetro.Migrations
                 {
                     b.HasOne("RigaMetro.Models.Line", "Line")
                         .WithMany("Trains")
-                        .HasForeignKey("LineID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LineID1");
 
                     b.Navigation("Line");
                 });

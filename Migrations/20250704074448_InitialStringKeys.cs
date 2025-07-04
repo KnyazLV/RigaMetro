@@ -9,7 +9,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace RigaMetro.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreateWithTimestampWithoutTimeZone : Migration
+    public partial class InitialStringKeys : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -18,8 +18,7 @@ namespace RigaMetro.Migrations
                 name: "Lines",
                 columns: table => new
                 {
-                    LineID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    LineID = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Color = table.Column<string>(type: "text", nullable: false),
                     IsClockwiseDirection = table.Column<bool>(type: "boolean", nullable: false),
@@ -35,8 +34,7 @@ namespace RigaMetro.Migrations
                 name: "Stations",
                 columns: table => new
                 {
-                    StationID = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    StationID = table.Column<string>(type: "character varying(8)", maxLength: 8, nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Latitude = table.Column<double>(type: "double precision", nullable: false),
                     Longitude = table.Column<double>(type: "double precision", nullable: false)
@@ -55,17 +53,17 @@ namespace RigaMetro.Migrations
                     LineID = table.Column<int>(type: "integer", nullable: false),
                     TripNumber = table.Column<int>(type: "integer", nullable: false),
                     IsClockwise = table.Column<bool>(type: "boolean", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    StartTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LineID1 = table.Column<string>(type: "character varying(8)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_LineSchedules", x => x.ScheduleID);
                     table.ForeignKey(
-                        name: "FK_LineSchedules_Lines_LineID",
-                        column: x => x.LineID,
+                        name: "FK_LineSchedules_Lines_LineID1",
+                        column: x => x.LineID1,
                         principalTable: "Lines",
-                        principalColumn: "LineID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "LineID");
                 });
 
             migrationBuilder.CreateTable(
@@ -76,25 +74,25 @@ namespace RigaMetro.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     LineID = table.Column<int>(type: "integer", nullable: false),
                     TrainName = table.Column<string>(type: "text", nullable: true),
-                    IsActive = table.Column<bool>(type: "boolean", nullable: false)
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    LineID1 = table.Column<string>(type: "character varying(8)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Trains", x => x.TrainID);
                     table.ForeignKey(
-                        name: "FK_Trains_Lines_LineID",
-                        column: x => x.LineID,
+                        name: "FK_Trains_Lines_LineID1",
+                        column: x => x.LineID1,
                         principalTable: "Lines",
-                        principalColumn: "LineID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "LineID");
                 });
 
             migrationBuilder.CreateTable(
                 name: "LineStations",
                 columns: table => new
                 {
-                    LineID = table.Column<int>(type: "integer", nullable: false),
-                    StationID = table.Column<int>(type: "integer", nullable: false),
+                    LineID = table.Column<string>(type: "character varying(8)", nullable: false),
+                    StationID = table.Column<string>(type: "character varying(8)", nullable: false),
                     StationOrder = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -118,8 +116,8 @@ namespace RigaMetro.Migrations
                 name: "TimeBetweenStations",
                 columns: table => new
                 {
-                    FromStationID = table.Column<int>(type: "integer", nullable: false),
-                    ToStationID = table.Column<int>(type: "integer", nullable: false),
+                    FromStationID = table.Column<string>(type: "character varying(8)", nullable: false),
+                    ToStationID = table.Column<string>(type: "character varying(8)", nullable: false),
                     TimeSeconds = table.Column<int>(type: "integer", nullable: false),
                     DistanceM = table.Column<int>(type: "integer", nullable: false)
                 },
@@ -148,7 +146,8 @@ namespace RigaMetro.Migrations
                     StationOrder = table.Column<int>(type: "integer", nullable: false),
                     StationID = table.Column<int>(type: "integer", nullable: false),
                     ArrivalTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DepartureTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    DepartureTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    StationID1 = table.Column<string>(type: "character varying(8)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -160,11 +159,10 @@ namespace RigaMetro.Migrations
                         principalColumn: "ScheduleID",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ScheduleStops_Stations_StationID",
-                        column: x => x.StationID,
+                        name: "FK_ScheduleStops_Stations_StationID1",
+                        column: x => x.StationID1,
                         principalTable: "Stations",
-                        principalColumn: "StationID",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "StationID");
                 });
 
             migrationBuilder.CreateTable(
@@ -195,23 +193,23 @@ namespace RigaMetro.Migrations
             migrationBuilder.InsertData(
                 table: "Lines",
                 columns: new[] { "LineID", "Color", "EndWorkTime", "IsClockwiseDirection", "Name", "StartWorkTime" },
-                values: new object[] { 1, "#FF0000", new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified), true, "Sarkandaugava–Ziepniekkalns", new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified) });
+                values: new object[] { "LN01", "#FF0000", new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified), true, "Sarkandaugava–Ziepniekkalns", new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified) });
 
             migrationBuilder.InsertData(
                 table: "Stations",
                 columns: new[] { "StationID", "Latitude", "Longitude", "Name" },
                 values: new object[,]
                 {
-                    { 1, 57.003383999999997, 24.118736999999999, "Sarkandaugava" },
-                    { 2, 56.991002000000002, 24.122138, "Rupnica RER" },
-                    { 3, 56.974578999999999, 24.111671000000001, "Ramulu iela" },
-                    { 4, 56.964005999999998, 24.106183000000001, "Petersala" },
-                    { 5, 56.956935000000001, 24.101257, "Kronvalda parks" },
-                    { 6, 56.947561, 24.119751999999998, "Stacijas laukums" },
-                    { 7, 56.933002999999999, 24.121713, "Zaķusala" },
-                    { 8, 56.919696999999999, 24.098175999999999, "Straume" },
-                    { 9, 56.912930000000003, 24.069526, "Dzintars" },
-                    { 10, 56.898448000000002, 24.092072999999999, "Ziepniekkalns" }
+                    { "ST101", 57.003383999999997, 24.118736999999999, "Sarkandaugava" },
+                    { "ST102", 56.991002000000002, 24.122138, "Rupnica RER" },
+                    { "ST103", 56.974578999999999, 24.111671000000001, "Ramulu iela" },
+                    { "ST104", 56.964005999999998, 24.106183000000001, "Petersala" },
+                    { "ST105", 56.956935000000001, 24.101257, "Kronvalda parks" },
+                    { "ST106", 56.947561, 24.119751999999998, "Stacijas laukums" },
+                    { "ST107", 56.933002999999999, 24.121713, "Zaķusala" },
+                    { "ST108", 56.919696999999999, 24.098175999999999, "Straume" },
+                    { "ST109", 56.912930000000003, 24.069526, "Dzintars" },
+                    { "ST110", 56.898448000000002, 24.092072999999999, "Ziepniekkalns" }
                 });
 
             migrationBuilder.InsertData(
@@ -219,22 +217,22 @@ namespace RigaMetro.Migrations
                 columns: new[] { "LineID", "StationID", "StationOrder" },
                 values: new object[,]
                 {
-                    { 1, 1, 1 },
-                    { 1, 2, 2 },
-                    { 1, 3, 3 },
-                    { 1, 4, 4 },
-                    { 1, 5, 5 },
-                    { 1, 6, 6 },
-                    { 1, 7, 7 },
-                    { 1, 8, 8 },
-                    { 1, 9, 9 },
-                    { 1, 10, 10 }
+                    { "LN01", "ST101", 1 },
+                    { "LN01", "ST102", 2 },
+                    { "LN01", "ST103", 3 },
+                    { "LN01", "ST104", 4 },
+                    { "LN01", "ST105", 5 },
+                    { "LN01", "ST106", 6 },
+                    { "LN01", "ST107", 7 },
+                    { "LN01", "ST108", 8 },
+                    { "LN01", "ST109", 9 },
+                    { "LN01", "ST110", 10 }
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_LineSchedules_LineID",
+                name: "IX_LineSchedules_LineID1",
                 table: "LineSchedules",
-                column: "LineID");
+                column: "LineID1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LineStations_StationID",
@@ -242,9 +240,9 @@ namespace RigaMetro.Migrations
                 column: "StationID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ScheduleStops_StationID",
+                name: "IX_ScheduleStops_StationID1",
                 table: "ScheduleStops",
-                column: "StationID");
+                column: "StationID1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_TimeBetweenStations_ToStationID",
@@ -257,9 +255,9 @@ namespace RigaMetro.Migrations
                 column: "ScheduleID");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Trains_LineID",
+                name: "IX_Trains_LineID1",
                 table: "Trains",
-                column: "LineID");
+                column: "LineID1");
         }
 
         /// <inheritdoc />

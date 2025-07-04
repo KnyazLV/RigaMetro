@@ -68,8 +68,6 @@ public class HomeController : Controller {
             TimeBetween  = times
         };
     }
-
-
     
     public IActionResult History() {
         return View();
