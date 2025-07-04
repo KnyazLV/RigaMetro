@@ -9,6 +9,7 @@ builder.Services.AddDbContext<MetroDbContext>(options =>
 
 builder.Services.AddMvc();
 builder.Services.AddScoped<DistanceSeeder>();
+builder.Services.AddScoped<IScheduleService, ScheduleService>();
 
 var app = builder.Build();
 

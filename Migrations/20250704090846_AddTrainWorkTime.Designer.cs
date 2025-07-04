@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RigaMetro.Data;
@@ -11,9 +12,11 @@ using RigaMetro.Data;
 namespace RigaMetro.Migrations
 {
     [DbContext(typeof(MetroDbContext))]
-    partial class MetroDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250704090846_AddTrainWorkTime")]
+    partial class AddTrainWorkTime
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -331,26 +334,6 @@ namespace RigaMetro.Migrations
                     b.HasIndex("LineID");
 
                     b.ToTable("Trains");
-
-                    b.HasData(
-                        new
-                        {
-                            TrainID = "TR001",
-                            EndWorkTime = new TimeSpan(0, 20, 0, 0, 0),
-                            IsActive = true,
-                            LineID = "LN01",
-                            StartWorkTime = new TimeSpan(0, 8, 0, 0, 0),
-                            TrainName = "TR–1"
-                        },
-                        new
-                        {
-                            TrainID = "TR002",
-                            EndWorkTime = new TimeSpan(0, 19, 30, 0, 0),
-                            IsActive = true,
-                            LineID = "LN01",
-                            StartWorkTime = new TimeSpan(0, 7, 30, 0, 0),
-                            TrainName = "TR–2"
-                        });
                 });
 
             modelBuilder.Entity("RigaMetro.Models.TrainAssignment", b =>

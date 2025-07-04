@@ -12,8 +12,8 @@ using RigaMetro.Data;
 namespace RigaMetro.Migrations
 {
     [DbContext(typeof(MetroDbContext))]
-    [Migration("20250704074448_InitialStringKeys")]
-    partial class InitialStringKeys
+    [Migration("20250704083011_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -66,19 +66,14 @@ namespace RigaMetro.Migrations
 
             modelBuilder.Entity("RigaMetro.Models.LineSchedule", b =>
                 {
-                    b.Property<int>("ScheduleID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ScheduleID"));
+                    b.Property<string>("ScheduleID")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsClockwise")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("LineID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("LineID1")
+                    b.Property<string>("LineID")
+                        .IsRequired()
                         .HasColumnType("character varying(8)");
 
                     b.Property<DateTime>("StartTime")
@@ -89,7 +84,7 @@ namespace RigaMetro.Migrations
 
                     b.HasKey("ScheduleID");
 
-                    b.HasIndex("LineID1");
+                    b.HasIndex("LineID");
 
                     b.ToTable("LineSchedules");
                 });
@@ -176,8 +171,8 @@ namespace RigaMetro.Migrations
 
             modelBuilder.Entity("RigaMetro.Models.ScheduleStop", b =>
                 {
-                    b.Property<int>("ScheduleID")
-                        .HasColumnType("integer");
+                    b.Property<string>("ScheduleID")
+                        .HasColumnType("text");
 
                     b.Property<int>("StationOrder")
                         .HasColumnType("integer");
@@ -188,15 +183,13 @@ namespace RigaMetro.Migrations
                     b.Property<DateTime>("DepartureTime")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("StationID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("StationID1")
+                    b.Property<string>("StationID")
+                        .IsRequired()
                         .HasColumnType("character varying(8)");
 
                     b.HasKey("ScheduleID", "StationOrder");
 
-                    b.HasIndex("StationID1");
+                    b.HasIndex("StationID");
 
                     b.ToTable("ScheduleStops");
                 });
@@ -317,19 +310,14 @@ namespace RigaMetro.Migrations
 
             modelBuilder.Entity("RigaMetro.Models.Train", b =>
                 {
-                    b.Property<int>("TrainID")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("TrainID"));
+                    b.Property<string>("TrainID")
+                        .HasColumnType("text");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("LineID")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("LineID1")
+                    b.Property<string>("LineID")
+                        .IsRequired()
                         .HasColumnType("character varying(8)");
 
                     b.Property<string>("TrainName")
@@ -337,18 +325,18 @@ namespace RigaMetro.Migrations
 
                     b.HasKey("TrainID");
 
-                    b.HasIndex("LineID1");
+                    b.HasIndex("LineID");
 
                     b.ToTable("Trains");
                 });
 
             modelBuilder.Entity("RigaMetro.Models.TrainAssignment", b =>
                 {
-                    b.Property<int>("TrainID")
-                        .HasColumnType("integer");
+                    b.Property<string>("TrainID")
+                        .HasColumnType("text");
 
-                    b.Property<int>("ScheduleID")
-                        .HasColumnType("integer");
+                    b.Property<string>("ScheduleID")
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("AssignmentDate")
                         .HasColumnType("timestamp without time zone");
@@ -364,7 +352,9 @@ namespace RigaMetro.Migrations
                 {
                     b.HasOne("RigaMetro.Models.Line", "Line")
                         .WithMany("LineSchedules")
-                        .HasForeignKey("LineID1");
+                        .HasForeignKey("LineID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Line");
                 });
@@ -398,7 +388,9 @@ namespace RigaMetro.Migrations
 
                     b.HasOne("RigaMetro.Models.Station", "Station")
                         .WithMany()
-                        .HasForeignKey("StationID1");
+                        .HasForeignKey("StationID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Schedule");
 
@@ -428,7 +420,9 @@ namespace RigaMetro.Migrations
                 {
                     b.HasOne("RigaMetro.Models.Line", "Line")
                         .WithMany("Trains")
-                        .HasForeignKey("LineID1");
+                        .HasForeignKey("LineID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Line");
                 });

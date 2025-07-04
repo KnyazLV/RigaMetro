@@ -1,9 +1,9 @@
 ﻿namespace RigaMetro.Models;
 
 public class ScheduleStop {
-    public int ScheduleID { get; set; }
+    public string ScheduleID { get; set; } = "";
     public int StationOrder { get; set; }
-    public int StationID { get; set; }
+    public string StationID { get; set; } = "";
     public DateTime ArrivalTime { get; set; }
     public DateTime DepartureTime { get; set; }
 

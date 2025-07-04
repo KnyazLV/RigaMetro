@@ -3,9 +3,8 @@
 namespace RigaMetro.Models;
 
 public class LineSchedule {
-    [Key]
-    public int ScheduleID { get; set; }
-    public int LineID { get; set; }
+    [Key] public string ScheduleID { get; set; } = "";
+    public string LineID { get; set; } = "";
     public int TripNumber { get; set; }
     public bool IsClockwise { get; set; }
     public DateTime StartTime { get; set; }
