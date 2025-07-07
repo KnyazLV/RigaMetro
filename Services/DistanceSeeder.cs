@@ -17,12 +17,26 @@ public class DistanceSeeder {
             .ThenInclude(ls => ls.Station)
             .ToListAsync();
 
-        var entities = new List<TimeBetweenStations>();
+        var pairs = await _db.TimeBetweenStations
+            .AsNoTracking()
+            .Select(t => new { t.FromStationID, t.ToStationID })
+            .ToListAsync();
 
-        foreach (var stations in lines.Select(line => line.LineStations.Select(ls => ls.Station).ToList()))
-            for (var i = 0; i < stations.Count - 1; i++) {
+        var existing = pairs
+            .Select(x => (x.FromStationID, x.ToStationID))
+            .ToHashSet();
+
+        var toInsert = new List<TimeBetweenStations>();
+
+        foreach (var line in lines) {
+            var stations = line.LineStations.Select(ls => ls.Station!).ToList();
+            for (var i = 0; i + 1 < stations.Count; i++) {
                 var from = stations[i];
                 var to = stations[i + 1];
+
+                if (existing.Contains((from.StationID, to.StationID))
+                    || existing.Contains((to.StationID, from.StationID)))
+                    continue;
 
                 var distance = CalculateDistanceMeters(
                     from.Latitude, from.Longitude,
@@ -30,19 +44,28 @@ public class DistanceSeeder {
 
                 var timeSec = (int)Math.Round(distance / 11.11);
 
-                entities.Add(new TimeBetweenStations {
+                toInsert.Add(new TimeBetweenStations {
                     FromStationID = from.StationID,
                     ToStationID = to.StationID,
                     DistanceM = (int)Math.Round(distance),
                     TimeSeconds = timeSec
                 });
-            }
 
-        if (!await _db.TimeBetweenStations.AnyAsync()) {
-            await _db.TimeBetweenStations.AddRangeAsync(entities);
+                toInsert.Add(new TimeBetweenStations {
+                    FromStationID = to.StationID,
+                    ToStationID = from.StationID,
+                    DistanceM = (int)Math.Round(distance),
+                    TimeSeconds = timeSec
+                });
+            }
+        }
+
+        if (toInsert.Any()) {
+            await _db.TimeBetweenStations.AddRangeAsync(toInsert);
             await _db.SaveChangesAsync();
         }
     }
+
 
     private static double CalculateDistanceMeters(double latitude1, double longitude1, double latitude2, double longitude2) {
         const double earthRadius = 6371000; // meters

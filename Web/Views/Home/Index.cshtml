@@ -13,15 +13,6 @@
         mapboxgl.accessToken = '@token';
         const mapData = JSON.parse('@Html.Raw(json)');
 
-        // Создаем карту линий для быстрого поиска
-        const lineInfoMap = {};
-        mapData.Lines.forEach(line => {
-            lineInfoMap[line.LineID] = {
-                name: line.Name,
-                color: line.Color
-            };
-        });
-
         const map = new mapboxgl.Map({
             container: 'map',
             style: 'mapbox://styles/mapbox/dark-v11',
@@ -29,8 +20,19 @@
             zoom: 10
         });
 
+        // подготовка данных о линиях
+        const lineInfoMap = {};
+        mapData.Lines.forEach(line => {
+            lineInfoMap[line.LineID] = {
+                name: line.Name,
+                color: line.Color,
+                clockwiseTerminal: line.ClockwiseTerminal,
+                counterclockwiseTerminal: line.CounterclockwiseTerminal
+            };
+        });
+
         map.on('load', () => {
-            // Сначала добавляем линии
+            // рендер линий
             mapData.Lines.forEach(line => {
                 const coords = line.Stations.map(s => [s.Longitude, s.Latitude]);
                 map.addSource(`line-${line.LineID}`, {
@@ -39,11 +41,7 @@
                         type: 'FeatureCollection',
                         features: [{
                             type: 'Feature',
-                            properties: {},
-                            geometry: {
-                                type: 'LineString',
-                                coordinates: coords
-                            }
+                            geometry: {type: 'LineString', coordinates: coords}
                         }]
                     }
                 });
@@ -51,176 +49,106 @@
                     id: `line-${line.LineID}`,
                     type: 'line',
                     source: `line-${line.LineID}`,
-                    layout: {
-                        'line-join': 'round',
-                        'line-cap': 'round'
-                    },
-                    paint: {
-                        'line-color': line.Color,
-                        'line-width': 9
-                    }
+                    layout: {'line-join': 'round', 'line-cap': 'round'},
+                    paint: {'line-color': line.Color, 'line-width': 9}
                 });
             });
 
-            // Затем добавляем точки (слой окажется поверх линий)
+            // рендер станций
             const stationFeatures = [];
             mapData.Lines.forEach(line => {
                 line.Stations.forEach(s => {
                     stationFeatures.push({
                         type: 'Feature',
-                        properties: {
-                            name: s.Name,
-                            stationId: s.StationID
-                        },
-                        geometry: {
-                            type: 'Point',
-                            coordinates: [s.Longitude, s.Latitude]
-                        }
+                        properties: {name: s.Name, stationId: s.StationID},
+                        geometry: {type: 'Point', coordinates: [s.Longitude, s.Latitude]}
                     });
                 });
             });
-
-            map.addSource('stations', {
-                type: 'geojson',
-                data: {type: 'FeatureCollection', features: stationFeatures}
-            });
-
+            map.addSource('stations', {type: 'geojson', data: {type: 'FeatureCollection', features: stationFeatures}});
             map.addLayer({
-                id: 'stations',
-                type: 'circle',
-                source: 'stations',
+                id: 'stations', type: 'circle', source: 'stations',
                 paint: {
-                    'circle-color': '#ffffff',
-                    'circle-radius': 8,
-                    'circle-stroke-width': 3,
-                    'circle-stroke-color': '#000000'
+                    'circle-color': '#fff', 'circle-radius': 8,
+                    'circle-stroke-width': 3, 'circle-stroke-color': '#000'
                 }
             });
 
-            // Popup on hover
-            const popup = new mapboxgl.Popup({
+            const hoverPopup = new mapboxgl.Popup({
                 closeButton: false,
                 closeOnClick: false,
                 className: 'transparent-popup'
             });
-
             map.on('mouseenter', 'stations', e => {
                 map.getCanvas().style.cursor = 'pointer';
                 const coords = e.features[0].geometry.coordinates.slice();
                 const name = e.features[0].properties.name;
-                popup.setLngLat(coords)
-                    .setHTML(`<div class="station-name">${name}</div>`)
-                    .addTo(map);
+                hoverPopup.setLngLat(coords).setHTML(`<div class="station-name">${name}</div>`).addTo(map);
             });
-
             map.on('mouseleave', 'stations', () => {
                 map.getCanvas().style.cursor = '';
-                popup.remove();
+                hoverPopup.remove();
             });
 
-            // Click для показа расписания
+            // клик — рендерим столько таблиц, сколько линий в station.Schedule
             map.on('click', 'stations', e => {
                 const coords = e.features[0].geometry.coordinates.slice();
-                const stationName = e.features[0].properties.name;
                 const stationId = e.features[0].properties.stationId;
-
-                // Найти станцию в данных
-                let station = null;
+                let station;
                 for (const line of mapData.Lines) {
                     station = line.Stations.find(s => s.StationID === stationId);
                     if (station) break;
                 }
-
                 if (!station || !station.Schedule || Object.keys(station.Schedule).length === 0) {
                     new mapboxgl.Popup({closeOnClick: true})
                         .setLngLat(coords)
-                        .setHTML('<div class="no-schedule">Расписание для данной станции отсутствует</div>')
+                        .setHTML('<div class="no-schedule">Расписание отсутствует</div>')
                         .addTo(map);
                     return;
                 }
-
-                const scheduleHtml = generateStationScheduleHtml(station, lineInfoMap);
-
-                new mapboxgl.Popup({
-                    closeOnClick: true,
-                    maxWidth: '800px',
-                    className: 'schedule-popup'
-                })
-                    .setLngLat(coords)
-                    .setHTML(scheduleHtml)
-                    .addTo(map);
+                const html = generateStationScheduleHtml(station);
+                new mapboxgl.Popup({closeOnClick: true, maxWidth: '800px', className: 'schedule-popup'})
+                    .setLngLat(coords).setHTML(html).addTo(map);
             });
         });
 
-        // Функция генерации HTML для расписания станции
+        // функция рендеринга — теперь цикл создаёт несколько таблиц
         function generateStationScheduleHtml(station) {
             let html = `<div class="station-schedule"><h4>${station.Name}</h4>`;
-
             for (const [lineId, schedule] of Object.entries(station.Schedule)) {
-                const line = mapData.Lines.find(l => l.LineID === lineId);
-                if (!line) continue;
-
-                const terminalCW = line.ClockwiseTerminal;
-                const terminalCCW = line.CounterclockwiseTerminal;
-
+                const info = lineInfoMap[lineId];
+                if (!info) continue;
                 html += `
-        <div class="line-schedule" style="border-left:4px solid ${line.Color};
-                                          padding-left:10px;margin-bottom:20px">
-            <h5 style="color:${line.Color}">${line.Name}</h5>
-
+        <div class="line-schedule" style="border-left:4px solid ${info.color};padding-left:10px;margin-bottom:20px">
+            <h5 style="color:${info.color}">${info.name}</h5>
             <div class="direction-schedule">
-                <h6>В&nbsp;сторону&nbsp;${terminalCW}</h6>
+                <h6>В сторону ${info.clockwiseTerminal}</h6>
                 ${generateHourlyScheduleTable(schedule.Clockwise)}
             </div>
-
             <div class="direction-schedule">
-                <h6>В&nbsp;сторону&nbsp;${terminalCCW}</h6>
+                <h6>В сторону ${info.counterclockwiseTerminal}</h6>
                 ${generateHourlyScheduleTable(schedule.Counterclockwise)}
             </div>
         </div>`;
             }
-
-            return html + '</div>';
+            html += '</div>';
+            return html;
         }
 
-
-        // Функция генерации таблицы расписания по часам
         function generateHourlyScheduleTable(hourlySchedule) {
-            let html = `
-            <table class="schedule-table">
-                <thead>
-                    <tr>
-        `;
-
-            // Заголовки часов
-            for (let hour = 0; hour < 24; hour++) {
-                html += `<th>${hour.toString().padStart(2, '0')}</th>`;
-            }
-
-            html += `
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-        `;
-
-            // Данные по часам
-            for (let hour = 0; hour < 24; hour++) {
+            let html = '<table class="schedule-table"><thead><tr>';
+            for (let h = 0; h < 24; h++) html += `<th>${h.toString().padStart(2, '0')}</th>`;
+            html += '</tr></thead><tbody><tr>';
+            for (let h = 0; h < 24; h++) {
                 html += '<td>';
-                if (hourlySchedule[hour] && hourlySchedule[hour].length > 0) {
-                    hourlySchedule[hour].forEach(minute => {
-                        html += `<div>${minute.toString().padStart(2, '0')}</div>`;
+                if (hourlySchedule[h]?.length) {
+                    hourlySchedule[h].forEach(m => {
+                        html += `<div>${m.toString().padStart(2, '0')}</div>`;
                     });
                 }
                 html += '</td>';
             }
-
-            html += `
-                    </tr>
-                </tbody>
-            </table>
-        `;
-
+            html += '</tr></tbody></table>';
             return html;
         }
     </script>

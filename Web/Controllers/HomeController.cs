@@ -32,6 +32,10 @@ public class HomeController : Controller {
 
         await _scheduleService.GenerateDailyScheduleAsync(trainId, workDate);
         await _scheduleService.GenerateDailyScheduleAsync("TR002", workDate);
+        await _scheduleService.GenerateDailyScheduleAsync("TR201", workDate);
+        await _scheduleService.GenerateDailyScheduleAsync("TR202", workDate);
+        await _scheduleService.GenerateDailyScheduleAsync("TR301", workDate);
+        await _scheduleService.GenerateDailyScheduleAsync("TR302", workDate);
 
         var model = await CreateMapDataViewModel();
         ViewData["MapboxToken"] = _configuration["MapBox:ApiKey"];
@@ -48,7 +52,6 @@ public class HomeController : Controller {
     #region ViewModelCreation
 
     private async Task<MapDataViewModel> CreateMapDataViewModel() {
-        /* ―–– 1. базовые справочники ―–– */
         var times = await _db.TimeBetweenStations
             .AsNoTracking()
             .Select(t => new TimeBetweenViewModel {
@@ -91,16 +94,20 @@ public class HomeController : Controller {
         foreach (var line in lines) {
             /* список станций строго по порядку */
             var stations = line.LineStations
-                .Select(ls => new StationViewModel {
+                .OrderBy(ls => ls.StationOrder)          // ← Сортируем здесь
+                .Select(ls => new StationViewModel
+                {
                     StationID = ls.StationID,
-                    Name = ls.Station!.Name,
-                    Latitude = ls.Station.Latitude,
+                    Name      = ls.Station!.Name,
+                    Latitude  = ls.Station.Latitude,
                     Longitude = ls.Station.Longitude,
-                    Order = ls.StationOrder,
-                    Schedule = stationSchedules.GetValueOrDefault(ls.StationID,
-                        new Dictionary<string, ScheduleViewModel>())
+                    Order     = ls.StationOrder,
+                    Schedule  = stationSchedules.ContainsKey(ls.StationID)
+                        ? stationSchedules[ls.StationID]
+                        : new Dictionary<string, ScheduleViewModel>()
                 })
                 .ToList();
+
 
             lineViewModels.Add(new LineWithStationsViewModel {
                 LineID = line.LineID,
@@ -112,43 +119,52 @@ public class HomeController : Controller {
             });
         }
 
-        return new MapDataViewModel {
+        var model = new MapDataViewModel() {
             Lines = lineViewModels,
             TimeBetween = times,
-            Trains = trains
+            Trains = trains,
         };
+        
+        foreach (var line in model.Lines)
+            foreach (var st in line.Stations)
+                _logger.LogInformation("Station {0} has {1} lines in Schedule",
+                    st.StationID, st.Schedule.Count);
+
+        return model;
+
+        // return new MapDataViewModel {
+        //     Lines = lineViewModels,
+        //     TimeBetween = times,
+        //     Trains = trains
+        // };
     }
 
 
-    private Dictionary<string, Dictionary<string, ScheduleViewModel>> BuildStationSchedules(List<ScheduleStop> scheduleStops) {
+    private Dictionary<string, Dictionary<string, ScheduleViewModel>> BuildStationSchedules(List<ScheduleStop> stops)
+    {
         var result = new Dictionary<string, Dictionary<string, ScheduleViewModel>>();
 
-        var stopsByStation = scheduleStops.GroupBy(ss => ss.StationID);
-
-        foreach (var stationGroup in stopsByStation) {
-            var stationId = stationGroup.Key;
+        foreach (var stationGroup in stops.GroupBy(ss => ss.StationID))
+        {
             var lineSchedules = new Dictionary<string, ScheduleViewModel>();
-            var stopsByLine = stationGroup.GroupBy(ss => ss.Schedule.LineID);
 
-            foreach (var lineGroup in stopsByLine) {
-                var lineId = lineGroup.Key;
-                var scheduleViewModel = new ScheduleViewModel();
-  
+            foreach (var lineGroup in stationGroup.GroupBy(ss => ss.Schedule.LineID))
+            {
+                // создаём новый ScheduleViewModel для каждой линии
+                var vm = new ScheduleViewModel();
                 foreach (var stop in lineGroup)
-                    if (stop.Schedule.IsClockwise)
-                        scheduleViewModel.Clockwise.Add(stop.ArrivalTime);
-                    else
-                        scheduleViewModel.Counterclockwise.Add(stop.ArrivalTime);
-
-                lineSchedules[lineId] = scheduleViewModel;
+                    if (stop.Schedule.IsClockwise) vm.Clockwise.Add(stop.ArrivalTime);
+                    else vm.Counterclockwise.Add(stop.ArrivalTime);
+                lineSchedules[lineGroup.Key] = vm;
             }
 
-
-            result[stationId] = lineSchedules;
+            // НИКОГДА не reuse lineSchedules из предыдущей итерации
+            result[stationGroup.Key] = lineSchedules;
         }
 
         return result;
     }
+
 
     #endregion
 }

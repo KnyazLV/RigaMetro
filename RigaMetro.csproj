@@ -9,7 +9,7 @@
 
     <ItemGroup>
       <Folder Include="Domain\" />
-      <Folder Include="Infrastructure\" />
+      <Folder Include="Infrastructure\Migrations\" />
       <Folder Include="Web\" />
       <Folder Include="wwwroot\lib\" />
     </ItemGroup>
