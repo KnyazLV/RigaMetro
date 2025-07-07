@@ -1,0 +1,32 @@
+﻿@model RigaMetro.Web.ViewComponents.StationScheduleComponentViewModel
+
+<div class="station-schedule">
+  <h4>@Model.Station.Name</h4>
+    
+  @if (Model.Station.Schedule == null || !Model.Station.Schedule.Any())
+  {
+    <p>Расписание для данной станции отсутствует</p>
+  }
+  else
+  {
+    @foreach (var (lineId, schedule) in Model.Station.Schedule)
+    {
+      var line = Model.LineInfo.GetValueOrDefault(lineId);
+      if (line == null) continue;
+
+      <div class="line-schedule" style="border-left: 4px solid @line.Color; padding-left: 10px; margin-bottom: 20px;">
+        <h5 style="color: @line.Color;">@line.Name</h5>
+                
+        <div class="direction-schedule">
+          <h6>По часовой стрелке</h6>
+          @await Html.PartialAsync("_HourlyScheduleTable", schedule.Clockwise)
+        </div>
+                
+        <div class="direction-schedule">
+          <h6>Против часовой стрелки</h6>
+          @await Html.PartialAsync("_HourlyScheduleTable", schedule.Counterclockwise)
+        </div>
+      </div>
+    }
+  }
+</div>

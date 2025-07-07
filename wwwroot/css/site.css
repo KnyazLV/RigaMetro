@@ -76,3 +76,92 @@ a {
     white-space: nowrap;
     margin-bottom: 6px; /* Поднимает текст выше точки */
 }
+
+.schedule-popup .mapboxgl-popup-content {
+    padding: 15px;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.schedule-popup .mapboxgl-popup-close-button {
+    font-size: 20px;
+    padding: 5px;
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid #ddd;
+    padding: 2px;
+    text-align: center;
+    min-width: 20px;
+    color: #222;
+}
+
+.schedule-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    font-size: 10px;
+    color: #222;
+}
+
+.direction-schedule h6 {
+    color:#ddd;   /* или #f8f9fa */
+    font-weight:600;
+    margin:4px 0 2px;
+}
+
+
+/*#region ScheduleComponent*/
+
+.station-schedule {
+    max-width: 700px;
+    font-family: Arial, sans-serif;
+}
+
+.station-schedule h4 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #007cba;
+    padding-bottom: 5px;
+}
+
+.line-schedule {
+    margin-bottom: 20px;
+}
+
+.direction-schedule {
+    margin-bottom: 15px;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 11px;
+    margin-bottom: 10px;
+}
+
+.schedule-table th,
+.schedule-table td {
+    border: 1px solid #ddd;
+    padding: 2px;
+    text-align: center;
+    min-width: 20px;
+}
+
+.schedule-table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.schedule-table td {
+    vertical-align: top;
+    min-height: 20px;
+    font-size: 10px;
+}
+
+.schedule-table td div {
+    margin: 1px 0;
+}
+
+/*#endregion*/

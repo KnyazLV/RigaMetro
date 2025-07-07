@@ -1,5 +1,6 @@
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
-using RigaMetro.Data;
+using RigaMetro.Infrastructure.Data;
 using RigaMetro.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,13 @@ builder.Services.AddDbContext<MetroDbContext>(options =>
 builder.Services.AddMvc();
 builder.Services.AddScoped<DistanceSeeder>();
 builder.Services.AddScoped<IScheduleService, ScheduleService>();
+
+builder.Services.Configure<RazorViewEngineOptions>(options => {
+    options.ViewLocationFormats.Clear();
+    options.ViewLocationFormats.Add("/Web/Views/{1}/{0}.cshtml");
+    options.ViewLocationFormats.Add("/Web/Views/Shared/{0}.cshtml");
+});
+
 
 var app = builder.Build();
 
@@ -26,7 +34,5 @@ using (var scope = app.Services.CreateScope()) {
     var seeder = scope.ServiceProvider.GetRequiredService<DistanceSeeder>();
     await seeder.SeedAsync();
 }
-app.Run();
-
 
 app.Run();
