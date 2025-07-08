@@ -5,7 +5,12 @@
     var json = JsonSerializer.Serialize(Model);
 }
 
-<div id="map" style="width:100%; height:800px;"></div>
+<div style="position:relative;">
+    <div id="map" style="width:100%; height:800px;"></div>
+    <div id="map-hint" class="map-hint">
+        Для увеличения карты используйте Ctrl + колесо мыши
+    </div>
+</div>
 
 @section Scripts {
     <script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
@@ -19,6 +24,30 @@
             center: [24.105078, 56.946285],
             zoom: 10
         });
+
+        map.scrollZoom.disable();
+
+        map.getCanvas().addEventListener('wheel', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                map.scrollZoom.enable();
+            } else {
+                map.scrollZoom.disable();
+            }
+        });
+
+        map.scrollZoom.disable();
+
+        const mapHint = document.getElementById('map-hint');
+        let hintHidden = false;
+        map.getCanvas().addEventListener('wheel', function(e) {
+            // Скрываем подсказку только если пользователь действительно зажал Ctrl (или Cmd на Mac)
+            if ((e.ctrlKey || e.metaKey) && !hintHidden) {
+                mapHint.classList.add('hide');
+                hintHidden = true;
+                setTimeout(() => mapHint.style.display = 'none', 400);
+            }
+        });
+
 
         // подготовка данных о линиях
         const lineInfoMap = {};

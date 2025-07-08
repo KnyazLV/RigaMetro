@@ -1,0 +1,87 @@
+﻿@import url("common.css");
+
+body {
+    background-image: url("/images/LoginBG.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.custom-login {
+    background: #191A1A !important;
+    padding: 20px;
+}
+
+/* Контейнер должен быть position: relative */
+.form-group.position-relative {
+    position: relative;
+}
+
+/* Глазик справа с учётом размеров */
+.password-toggle {
+    position: absolute;
+    top: 3.8rem;
+    right: 0.4rem; /* расстояние до правого края input */
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;   /* ширина под размер иконки + запас */
+    height: 2rem;  /* высота под размер иконки + запас */
+    cursor: pointer;
+    z-index: 2;
+    user-select: none;
+    padding: 0;
+}
+
+/* Сам значок */
+.password-toggle img {
+    display: block;
+    width: 24px;   /* совпадает с width в img */
+    height: 24px;  /* совпадает с height в img */
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    pointer-events: none; /* чтобы клик шел по span, а не по картинке */
+}
+
+.password-toggle:hover img,
+.password-toggle:focus img {
+    opacity: 1;
+}
+
+
+.custom-login {
+    background: var(--color-bg-dark) !important;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+    max-width: 370px;
+    margin: 0 auto;
+}
+
+.form-label {
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding-top: 10px;
+}
+
+.login-error-title {
+    color: var(--color-accent);
+    font-size: 1.1em;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    padding-top: 20px;
+}
+
+.login-error-text {
+    color: var(--color-accent);
+    letter-spacing: 0.01em;
+}
+
+@media (max-width: 576px) {
+    .custom-login {
+        max-width: 100%;
+        padding: 12px;
+    }
+}
+

@@ -1,26 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');
+@import url("common.css");
 
-body {
-    background: #191A1A;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    color: #fff;
-}
-
-body, input, button, textarea, select {
-    font-family: "Kanit", sans-serif;
-}
-
-h1, h2, h3, h4, h5, h6, p, ul, form, img {
-    padding: 0;
-    margin: 0;
-    border: none;
-}
-
-a {
-    text-decoration: none;
-    color: #fff;
+.navbar-brand img {
+    height: 100px;
 }
 
 .hover-underline-animation {
@@ -46,7 +27,7 @@ a {
     transform-origin: bottom left;
 }
 
-/*Map*/
+/*#region Map*/
 
 /* Убираем белый фон и рамку у popup */
 .transparent-popup .mapboxgl-popup-content {
@@ -110,6 +91,29 @@ a {
     margin:4px 0 2px;
 }
 
+.map-hint {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(25, 26, 26, 0.85);
+    color: #fff;
+    padding: 6px 18px;
+    border-radius: 8px;
+    font-size: 1em;
+    font-weight: 400;
+    z-index: 1000;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    opacity: 1;
+    user-select: none;
+}
+.map-hint.hide {
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/*#endregion*/
 
 /*#region ScheduleComponent*/
 
@@ -121,7 +125,6 @@ a {
 .station-schedule h4 {
     margin-top: 0;
     color: #333;
-    /*border-bottom: 2px solid #333;*/
     padding-bottom: 5px;
 }
 
@@ -165,3 +168,73 @@ a {
 }
 
 /*#endregion*/
+
+/*#region AdminBar*/
+
+.admin-bar-active {
+    margin-top: 2.1rem;
+}
+
+.admin-top-bar {
+    background-color: var(--color-bg-darker);
+    color: var(--color-text-light);
+    font-size: 0.95rem;
+    padding: 0.4rem 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1030;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+
+.admin-bar-title {
+    font-weight: 600;
+    font-size: 1.08em;
+    letter-spacing: 0.04em;
+    padding-left: 0.5rem;
+}
+
+.admin-bar-actions {
+    gap: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.admin-top-bar .btn {
+    padding: 3px 5px;
+    border-width: 2px;
+    border-radius: 6px;
+    font-size: 0.97em;
+    font-weight: 500;
+    transition: background 0.18s, color 0.18s;
+}
+
+.admin-top-bar .btn-light {
+    background: var(--color-text-light);
+    color: var(--color-bg-dark);
+    border: none;
+}
+
+.admin-top-bar .btn-outline-light {
+    border: 1.5px solid var(--color-text-light);
+    color: var(--color-text-light);
+    background: transparent;
+}
+
+.admin-top-bar .btn-outline-light:hover,
+.admin-top-bar .btn-outline-light:focus {
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    color: var(--color-text-light);
+}
+
+.admin-top-bar img {
+    display: block;
+    filter: brightness(0) invert(1);
+    /* делает иконку белой, если svg чёрный */
+    margin: 0 2px;
+}
+
+
+/*#endregion*/
+
+

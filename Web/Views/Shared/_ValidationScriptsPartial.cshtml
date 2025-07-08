@@ -1,0 +1,14 @@
+﻿@section Scripts {
+  <environment include="Development">
+    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
+  </environment>
+  <environment exclude="Development">
+    <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.19.5/jquery.validate.min.js"
+            integrity="sha384-rZfj/ogBloos6wBXDU+4B8LYg+KZk4W/pH1LvQUEY/He5XhPuCsvur+X7PkFOJwJ"
+            crossorigin="anonymous"></script>
+    <script src="https://ajax.aspnetcdn.com/ajax/mvc/5.2.12/jquery.validate.unobtrusive.min.js"
+            integrity="sha384-2pvORjrgzB/3/LQGEWHf86ULTl/u2RneLrspNi97s5NSTIX+j0uHc6R9kk+HA/Ra"
+            crossorigin="anonymous"></script>
+  </environment>
+}

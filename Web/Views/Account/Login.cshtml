@@ -1,0 +1,98 @@
+﻿@model RigaMetro.Web.Models.ViewModels.Account.LoginViewModel
+@{
+  Layout = "_LoginLayout";
+  ViewBag.Title = "Login";
+}
+
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+      <div class="custom-login">
+        <div class="card-header d-flex justify-content-center">
+          <img src="~/images/RigaMetroLogo.svg" style="height: 100px" alt="Logo"/>
+        </div>
+        <div class="">
+          <form asp-action="Login" asp-controller="Account" method="post">
+            <input type="hidden" asp-for="@ViewData["ReturnUrl"]" />
+            
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+            {
+              <div class="login-error-block">
+                <div class="login-error-title">Ошибка входа</div>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                  <div class="login-error-text">@error.ErrorMessage</div>
+                }
+              </div>
+            }
+
+            <div class="form-group mb-3">
+              <label asp-for="Username" class="form-label"></label>
+              <input asp-for="Username" class="form-control" />
+              <span asp-validation-for="Username" class="field-error"></span>
+            </div>
+                        
+            <div class="form-group mb-3 position-relative">
+              <label asp-for="Password" class="form-label"></label>
+              <input asp-for="Password" class="form-control pe-5" id="passwordInput" autocomplete="current-password" />
+              <span class="password-toggle" id="togglePassword" tabindex="0" role="button" aria-label="Show/Hide password">
+                <img src="~/images/eye-with-line.svg" id="eyeIcon" alt="Show password" width="24" height="24" />
+              </span>
+              <span asp-validation-for="Password" class="field-error"></span>
+            </div>
+                        
+            
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div class="checkbox-wrapper-33 m-0">
+                <label class="checkbox">
+                  <input asp-for="RememberMe" class="checkbox__trigger visuallyhidden" />
+                  <span class="checkbox__symbol">
+                    <svg aria-hidden="true" class="icon-checkbox" width="28px" height="28px" viewBox="0 0 28 28" version="1" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 14l8 7L24 7"></path>
+                    </svg>
+                  </span>
+                  <span class="checkbox__textwrapper">@Html.DisplayNameFor(m => m.RememberMe)</span>
+                </label>
+              </div>
+              <button type="submit" class="btn btn-animated btn-accent">Log In</button>
+              @* <button type="submit" class="btn btn-accent-animated">Log In</button> *@
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@await Html.PartialAsync("_ValidationScriptsPartial")
+
+@section Scripts {
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const passwordInput = document.getElementById('passwordInput');
+      const toggle = document.getElementById('togglePassword');
+      const eyeIcon = document.getElementById('eyeIcon');
+
+      toggle.addEventListener('click', function () {
+        if (passwordInput.type === 'password') {
+          passwordInput.type = 'text';
+          eyeIcon.src = '@Url.Content("~/images/eye-open.svg")';
+          eyeIcon.alt = "Hide password";
+        } else {
+          passwordInput.type = 'password';
+          eyeIcon.src = '@Url.Content("~/images/eye-with-line.svg")';
+          eyeIcon.alt = "Show password";
+        }
+      });
+
+      // Поддержка клавиши Enter/Пробел для доступности
+      toggle.addEventListener('keydown', function (e) {
+        if (e.key === "Enter" || e.key === " ") {
+          toggle.click();
+          e.preventDefault();
+        }
+      });
+    });
+  </script>
+}
+

@@ -20,6 +20,8 @@
   "dependencies": {
     "bootstrap": "^5.3.7",
     "grunt": "^1.6.1",
-    "grunt-contrib-copy": "^1.0.0"
+    "grunt-contrib-copy": "^1.0.0",
+    "jquery-validation": "^1.21.0",
+    "jquery-validation-unobtrusive": "^4.0.0"
   }
 }

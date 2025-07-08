@@ -1,3 +1,13 @@
+@using Microsoft.AspNetCore.Mvc.Controllers
+@{
+  var actionDescriptor = Context.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>();
+  var currentController = actionDescriptor?.ControllerName;
+  var currentAction = actionDescriptor?.ActionName;
+  var showAdminBar = User.Identity.IsAuthenticated 
+                     && User.IsInRole("Admin")
+                     && !(currentController == "Admin" && currentAction == "Index");
+}
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,7 +19,28 @@
   <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
   <link rel="stylesheet" href="~/css/site.css" />
 </head>
-<body>
+<body class="@(showAdminBar ? "admin-bar-active" : "")">
+@if (showAdminBar) {
+  <div class="admin-top-bar d-flex justify-content-between align-items-center">
+    <div class="container-fluid d-flex justify-content-between align-items-center px-3">
+      <div class="admin-bar-title d-flex align-items-center gap-2 py-1">
+        <span>Riga Metro | Admin Panel</span>
+      </div>
+      <div class="admin-bar-actions d-flex align-items-center gap-2">
+        <a class="btn btn-animated btn-light-animated admin-bar-btn"
+           asp-controller="Admin" asp-action="Index">
+          Open Admin
+        </a>
+        <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
+          <button type="submit" style="padding: 4px; border-width: 2px;" class="btn btn-outline-light d-flex align-items-center" title="Logout">
+            <img src="~/images/logout.svg" alt="Logout" style="width:20px;height:20px;display:block;" />
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+}
+
 <header>
   <nav class="navbar navbar-expand-lg">
     <div class="container-fluid px-4 g-2 d-flex justify-content-between align-items-center">
@@ -31,7 +62,7 @@
   </nav>
 </header>
 <main class="container-fluid px-3" role="main">
-@RenderBody()
+  @RenderBody()
 </main>
 <footer class="container-fluid px-3 py-2 mt-1">
   <p class="text-center">Copyright© Rostislavs Belovs(Knyaz), @DateTime.Now.Year. All rights reserved</p>
