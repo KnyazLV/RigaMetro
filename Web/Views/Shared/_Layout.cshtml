@@ -63,22 +63,6 @@
 <main class="container-fluid px-3" role="main">
   @RenderBody()
 </main>
-@* <footer style="font-weight: 200; background-color: var(--color-bg-darker)"  *@
-@*         class="site-footer d-flex justify-content-between align-items-center p-3"> *@
-@*   <div> *@
-@*     <p>Made by <span style="font-weight: bold">Rostislavs Belovs</span></p> *@
-@*     <p>Copyright&copy; @DateTime.Now.Year | All rights reserved</p> *@
-@*   </div> *@
-@*   <a style="text-decoration: underline" href="https://github.com/KnyazLV/RigaMetro" target="_blank">Source Code</a> *@
-@*   <div style="text-align: right"> *@
-@*     <h4 style="color: var(--color-accent); font-weight: bold; font-size: 20px" class="text-uppercase">Contacts</h4> *@
-@*     <div style="font-weight: normal" class="d-flex gap-3 flex-row-reverse"> *@
-@*       <a href="https://github.com/KnyazLV" target="_blank">GitHub</a> *@
-@*       <a href="https://www.linkedin.com/in/rostislavs-belovs/" target="_blank">LinkedIn</a> *@
-@*       <a href="mailto:r.belovs@inbox.lv">r.belovs@inbox.lv</a> *@
-@*     </div> *@
-@*   </div> *@
-@* </footer> *@
 <footer class="site-footer d-flex flex-column flex-md-row justify-content-between align-items-center p-3 gap-3 gap-md-0 text-white" style="font-weight: 200; background-color: var(--color-bg-darker)">
   <div class="text-center text-md-start">
     <p>Made by <span style="font-weight: bold">Rostislavs Belovs</span></p>
@@ -97,20 +81,12 @@
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/riga-clock.js"></script>
 @RenderSection("Scripts", required: false)
 <script>
-  function updateRigaTime() {
-    // UTC+3 летом, UTC+2 зимой (EET/EEST). Для точности используем Europe/Riga.
-    const now = new Date();
-    const options = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Riga' };
-    const parts = new Intl.DateTimeFormat('en-GB', options).formatToParts(now);
-    let hour = parts.find(p => p.type === 'hour').value;
-    let minute = parts.find(p => p.type === 'minute').value;
-    let colon = now.getSeconds() % 2 === 0 ? '<span class="blink">:</span>' : ':';
-    document.getElementById('riga-time').innerHTML = `${hour}${colon}${minute}`;
-  }
-  updateRigaTime();
-  setInterval(updateRigaTime, 1000);
+  setupRigaClock('riga-time', false);
+  // updateRigaTime();
+  // setInterval(updateRigaTime, 1000);
 </script>
 
 </body>

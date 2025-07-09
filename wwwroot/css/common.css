@@ -8,7 +8,6 @@
     --color-text-light: #FFFFFF;
 }
 
-
 body {
     background: var(--color-bg-dark);
     align-items: center;
@@ -32,6 +31,7 @@ a {
     color: #fff;
 }
 
+/*#region Buttons*/
 .btn-accent {
     --btn-animated-color: var(--color-accent);
     --btn-animated-text: var(--color-text-light);
@@ -72,6 +72,33 @@ a {
     background-image: linear-gradient(30deg, var(--btn-animated-color, var(--color-accent)) 50%, transparent 50%);
     border-color: var(--btn-animated-color, var(--color-accent));
 }
+
+/*#endregion*/
+
+/*#region Lang-links*/
+
+.lang-link {
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 0 2px;
+    text-transform: uppercase;
+}
+
+.lang-link.active,
+.lang-link:hover,
+.lang-link:focus {
+    color: var(--color-accent, #9D2235);
+    text-decoration: none;
+}
+
+.lang-divider {
+    padding: 0 2px;
+    font-size: 1.08em;
+    user-select: none;
+}
+
+/*#endregion*/
 
 /*#region Checkbox*/
 

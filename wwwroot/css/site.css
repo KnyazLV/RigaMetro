@@ -1,33 +1,10 @@
 @import url("common.css");
 
+/*#region Header*/
+
 .navbar-brand img {
     height: 100px;
 }
-
-.hover-underline-animation {
-    display: inline-block;
-    position: relative;
-}
-
-.hover-underline-animation::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background-color: #fff; /* или другой нужный цвет */
-    transform-origin: bottom right;
-    transition: transform 0.25s ease-out;
-}
-
-.hover-underline-animation:hover::after {
-    transform: scaleX(1);
-    transform-origin: bottom left;
-}
-
-/*#region Header*/
 
 .navbar-right-block {
     min-width: 86px;
@@ -45,26 +22,6 @@
     transition: color 0.13s;
 }
 
-.lang-link {
-    font-size: 18px;
-    font-weight: bold;
-    text-decoration: none;
-    padding: 0 2px;
-    text-transform: uppercase;
-}
-
-.lang-link.active,
-.lang-link:hover,
-.lang-link:focus {
-    color: var(--color-accent, #9D2235);
-    text-decoration: none;
-}
-
-.lang-divider {
-    padding: 0 2px;
-    font-size: 1.08em;
-    user-select: none;
-}
 /*#endregion*/
 
 /*#region Map*/
@@ -311,7 +268,6 @@
     /* делает иконку белой, если svg чёрный */
     margin: 0 2px;
 }
-
 
 /*#endregion*/
 

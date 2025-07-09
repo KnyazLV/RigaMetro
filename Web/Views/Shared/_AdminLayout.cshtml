@@ -7,16 +7,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
-  <title>@ViewBag.Title | RigaMetro Admin</title>
+  <title>@ViewBag.Title | RigaMetro</title>
+  <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon.ico">
   <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="~/css/site.css" />
+  <link rel="stylesheet" href="~/css/admin.css" />
 </head>
 <body>
-<main class="container">
+<main class="admin-panel-main d-flex" role="main">
   @RenderBody()
 </main>
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/riga-clock.js"></script>
 @RenderSection("Scripts", required: false)
 </body>
 </html>

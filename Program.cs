@@ -41,11 +41,11 @@ app.UseHttpsRedirection();
 app.MapStaticAssets();
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapDefaultControllerRoute();
+// app.MapDefaultControllerRoute();
 
-// app.MapControllerRoute(
-//     name: "default",
-//     pattern: "{controller=Admin}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Admin}/{action=Index}/{id?}");
 
 
 using (var scope = app.Services.CreateScope()) {
