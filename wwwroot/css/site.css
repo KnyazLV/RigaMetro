@@ -27,6 +27,46 @@
     transform-origin: bottom left;
 }
 
+/*#region Header*/
+
+.navbar-right-block {
+    min-width: 86px;
+}
+
+.riga-time {
+    font-size: 18px;
+    font-weight: bold;
+    text-align: right;
+    user-select: none;
+}
+
+.riga-time .blink {
+    color: var(--color-accent);
+    transition: color 0.13s;
+}
+
+.lang-link {
+    font-size: 18px;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 0 2px;
+    text-transform: uppercase;
+}
+
+.lang-link.active,
+.lang-link:hover,
+.lang-link:focus {
+    color: var(--color-accent, #9D2235);
+    text-decoration: none;
+}
+
+.lang-divider {
+    padding: 0 2px;
+    font-size: 1.08em;
+    user-select: none;
+}
+/*#endregion*/
+
 /*#region Map*/
 
 /* Убираем белый фон и рамку у popup */
@@ -165,6 +205,44 @@
 
 .schedule-table td div {
     margin: 1px 0;
+}
+
+/*#endregion*/
+
+/*#region Disclaimer*/
+
+.disclaimer {
+    max-width: 525px;
+    text-align: center;
+    padding: 22px 20px 18px 20px;
+}
+
+.disclaimer-title {
+    text-transform: uppercase;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+}
+
+.disclaimer-accent {
+    color: var(--color-accent);
+    font-weight: bold;
+}
+
+/*#endregion*/
+
+/*#region Footer*/
+
+.footer-link {
+    color: #fff;
+    transition: color 0.25s;
+    font-weight: 400;
+    font-size: 1em;
+    opacity: 0.85;
+}
+.footer-link:hover,
+.footer-link:focus {
+    color: var(--color-accent);
+    opacity: 1;
 }
 
 /*#endregion*/
