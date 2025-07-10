@@ -31,30 +31,30 @@
     </table>
 }
 
-<!-- Дистанции между станциями -->
-@if (Model.TimeBetween.Any()) {
-    <h2>Дистанции между станциями</h2>
-    <table class="table table-striped">
-        <thead>
-        <tr>
-            <th>From StationID</th>
-            <th>To StationID</th>
-            <th>Distance (m)</th>
-            <th>Time (sec)</th>
-        </tr>
-        </thead>
-        <tbody>
-        @foreach (var t in Model.TimeBetween) {
-            <tr>
-                <td>@t.FromStationID</td>
-                <td>@t.ToStationID</td>
-                <td>@t.DistanceM</td>
-                <td>@t.TimeSeconds</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+@* <!-- Дистанции между станциями --> *@
+@* @if (Model.TimeBetween.Any()) { *@
+@*     <h2>Дистанции между станциями</h2> *@
+@*     <table class="table table-striped"> *@
+@*         <thead> *@
+@*         <tr> *@
+@*             <th>From StationID</th> *@
+@*             <th>To StationID</th> *@
+@*             <th>Distance (m)</th> *@
+@*             <th>Time (sec)</th> *@
+@*         </tr> *@
+@*         </thead> *@
+@*         <tbody> *@
+@*         @foreach (var t in Model.TimeBetween) { *@
+@*             <tr> *@
+@*                 <td>@t.FromStationID</td> *@
+@*                 <td>@t.ToStationID</td> *@
+@*                 <td>@t.DistanceM</td> *@
+@*                 <td>@t.TimeSeconds</td> *@
+@*             </tr> *@
+@*         } *@
+@*         </tbody> *@
+@*     </table> *@
+@* } *@
 
 <!-- Поезда -->
 @if (Model.Trains.Any()) {

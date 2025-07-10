@@ -52,15 +52,6 @@ public class HomeController : Controller {
     #region ViewModelCreation
 
     private async Task<MapDataViewModel> CreateMapDataViewModel() {
-        var times = await _db.TimeBetweenStations
-            .AsNoTracking()
-            .Select(t => new TimeBetweenViewModel {
-                FromStationID = t.FromStationID,
-                ToStationID = t.ToStationID,
-                DistanceM = t.DistanceM,
-                TimeSeconds = t.TimeSeconds
-            })
-            .ToListAsync();
 
         var trains = await _db.Trains
             .AsNoTracking()
@@ -74,7 +65,6 @@ public class HomeController : Controller {
             })
             .ToListAsync();
 
-        /* ―–– 2. все остановки для построения расписания ―–– */
         var scheduleStops = await _db.ScheduleStops
             .AsNoTracking()
             .Include(s => s.Schedule)
@@ -82,7 +72,6 @@ public class HomeController : Controller {
 
         var stationSchedules = BuildStationSchedules(scheduleStops);
 
-        /* ―–– 3. линии + терминальные станции ―–– */
         var lines = await _db.Lines
             .AsNoTracking()
             .Include(l => l.LineStations)
@@ -92,9 +81,8 @@ public class HomeController : Controller {
         var lineViewModels = new List<LineWithStationsViewModel>();
 
         foreach (var line in lines) {
-            /* список станций строго по порядку */
             var stations = line.LineStations
-                .OrderBy(ls => ls.StationOrder)          // ← Сортируем здесь
+                .OrderBy(ls => ls.StationOrder)
                 .Select(ls => new StationViewModel
                 {
                     StationID = ls.StationID,
@@ -121,22 +109,11 @@ public class HomeController : Controller {
 
         var model = new MapDataViewModel() {
             Lines = lineViewModels,
-            TimeBetween = times,
+            // TimeBetween = times,
             Trains = trains,
         };
         
-        foreach (var line in model.Lines)
-            foreach (var st in line.Stations)
-                _logger.LogInformation("Station {0} has {1} lines in Schedule",
-                    st.StationID, st.Schedule.Count);
-
         return model;
-
-        // return new MapDataViewModel {
-        //     Lines = lineViewModels,
-        //     TimeBetween = times,
-        //     Trains = trains
-        // };
     }
 
 

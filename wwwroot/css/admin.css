@@ -2,6 +2,18 @@
 
 /*#region AdminAsideBar*/
 
+/*.admin-layout {*/
+/*    display: flex;*/
+/*    min-height: 100vh;*/
+/*}*/
+
+/*.admin-sidebar {*/
+/*    width: 340px;*/
+/*    background: var(--color-bg-darker);*/
+/*    box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.52);*/
+/*    z-index: 2;*/
+/*}*/
+
 .admin-layout {
     display: flex;
     min-height: 100vh;
@@ -12,6 +24,11 @@
     background: var(--color-bg-darker);
     box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.52);
     z-index: 2;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    align-self: flex-start;
+    overflow-y: auto;
 }
 
 .admin-main-content {
@@ -122,3 +139,16 @@
 .admin-sidebar-footer {
     width: 100%;
 }
+
+/* контейнер фиксирует высоту графика и предотвращает «растягивание» страницы */
+.chart-container {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    padding: 18px 18px 8px 18px;
+    height: 460px;
+    max-width: 100%;
+    position: relative;
+}
+
+
