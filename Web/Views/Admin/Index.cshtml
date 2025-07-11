@@ -65,17 +65,17 @@
 </aside>
 <section class="admin-main-content">
     <div id="admin-tab-dashboard" class="admin-tab-content">
-        <h2 class="mb-3 text-uppercase" style="font-weight:700;">Сводная статистика</h2>
+        <h2 class="mb-3 text-uppercase" style="font-weight:700;">Summary statistics</h2>
         <div class="table-responsive">
             <table class="table table-dark table-sm text-center align-middle mb-4">
                 <thead>
                 <tr>
-                    <th>Линий</th>
-                    <th>Станций</th>
-                    <th>Поездов</th>
-                    <th>Активных поездов</th>
-                    <th>Протяжённость сети, км</th>
-                    <th>Рейсов в сутки</th>
+                    <th>Lines</th>
+                    <th>Stations</th>
+                    <th>Trains</th>
+                    <th>Active trains</th>
+                    <th>Length of road network, km</th>
+                    <th>Trips per day</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -91,16 +91,16 @@
             </table>
         </div>
 
-        <h3 class="mb-3 text-uppercase" style="font-weight:700;">Статистика по линиям</h3>
+        <h3 class="mb-3 text-uppercase" style="font-weight:700;">Statistics by line</h3>
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-sm text-center align-middle">
                 <thead class="table-dark">
                 <tr>
-                    <th>Линия</th>
-                    <th>Станций</th>
-                    <th>Длина, км</th>
-                    <th>Рейсов в сутки</th>
-                    <th>Поездов назначено</th>
+                    <th>Line</th>
+                    <th>Stations</th>
+                    <th>Length, km</th>
+                    <th>Trips per day</th>
+                    <th>Trains scheduled</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -118,12 +118,121 @@
                 </tbody>
             </table>
         </div>
-        <h3 class="mt-3 mb-3 text-uppercase" style="font-weight:700;">Число поездок по часам</h3>
+        <h3 class="mt-3 mb-3 text-uppercase" style="font-weight:700;">Number of trips per hour</h3>
         <div class="chart-container mb-4" style="max-width:100%;height:500px;position:relative;">
             <canvas id="tripsPerLineChart"></canvas>
         </div>
     </div>
-    <div id="admin-tab-trains" class="admin-tab-content d-none">Trains</div>
+    <div id="admin-tab-trains" class="admin-tab-content d-none">
+        <h2 class="mb-3 text-uppercase" style="font-weight:700;">List of trains</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-sm text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Number of train</th>
+                    <th>Line</th>
+                    <th>Start of work</th>
+                    <th>End of work</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var train in Model.Trains) {
+                    <tr data-train-id="@train.TrainID">
+                        <td>@train.TrainID</td>
+                        <td><input type="text" name="TrainName" class="form-control form-control-sm"
+                                   value="@train.TrainName" disabled/></td>
+                        <td>
+                            @Html.DropDownList(
+                                "LineID",
+                                new SelectList(Model.Lines, "LineID", "Name", train.LineID),
+                                new { @class = "form-select form-select-sm", disabled = "disabled" }
+                            )
+                        </td>
+                        <td>
+                            <input type="time" name="StartWorkTime"
+                                   class="form-control form-control-sm"
+                                   value="@(new DateTime(train.StartWorkTime.Ticks).ToString("HH:mm"))"
+                                   disabled/>
+                        </td>
+                        <td>
+                            <input type="time" name="EndWorkTime"
+                                   class="form-control form-control-sm"
+                                   value="@(new DateTime(train.EndWorkTime.Ticks).ToString("HH:mm"))"
+                                   disabled/>
+                        </td>
+
+                        <td>
+                            <span class="badge @(train.IsActive ? "bg-success" : "bg-secondary") status-display">
+                                @(train.IsActive ? "Active" : "Inactive")
+                            </span>
+                            <select name="IsActive"
+                                    class="form-select form-select-sm status-editor d-none"
+                                    data-value="@train.IsActive.ToString().ToLower()">
+                                <option value="true">Active</option>
+                                <option value="false">Inactive</option>
+                            </select>
+                        </td>
+
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-btn">Edit</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn">Delete</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#createTrainModal">
+            Add Train
+        </button>
+
+        <!-- Train creation window -->
+        <div class="modal fade" id="createTrainModal" tabindex="-1" aria-labelledby="createTrainLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="createTrainLabel">New Train</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createTrainForm">
+                            <div class="mb-2">
+                                <label class="form-label">Train name</label>
+                                <input type="text" name="TrainName" class="form-control" required/>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Line</label>
+                                @Html.DropDownList("LineID", new SelectList(Model.Lines, "LineID", "Name"), "Select a line", new { @class = "form-select", required = "required" })
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Start of work</label>
+                                <input type="time" name="StartWorkTime" class="form-control" required/>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">End of work</label>
+                                <input type="time" name="EndWorkTime" class="form-control" required/>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Статус</label>
+                                <select name="IsActive" class="form-select">
+                                    <option value="true">Active</option>
+                                    <option value="false">Inactive</option>
+                                </select>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" id="createTrainBtn" class="btn btn-primary">Create</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div id="admin-tab-lines" class="admin-tab-content d-none">Lines</div>
     <div id="admin-tab-export" class="admin-tab-content d-none">Export</div>
 </section>
@@ -132,26 +241,125 @@
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
-        import { renderTripsPerHourChart } from '/js/trips-per-hour-chart.js';
+    import { renderTripsPerHourChart } from '/js/trips-per-hour-chart.js';
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const navLinks = document.querySelectorAll('.admin-nav-link');
-            const tabContents = document.querySelectorAll('.admin-tab-content');
-            navLinks.forEach(link => {
-                link.addEventListener('click', function () {
-                    navLinks.forEach(l => l.classList.remove('active'));
-                    this.classList.add('active');
-                    tabContents.forEach(tc => tc.classList.add('d-none'));
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById('admin-tab-' + tabId).classList.remove('d-none');
-                });
+    document.addEventListener('DOMContentLoaded', function () {
+        // Navigation
+        const navLinks = document.querySelectorAll('.admin-nav-link');
+        const tabContents = document.querySelectorAll('.admin-tab-content');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                tabContents.forEach(tc => tc.classList.add('d-none'));
+                document.getElementById('admin-tab-' + this.getAttribute('data-tab')).classList.remove('d-none');
             });
-
-            const chartData = @Html.Raw(Model.AdminStatistics.TripsPerLineHourlyJson);
-            renderTripsPerHourChart('tripsPerLineChart', chartData);
-
-            setupRigaClock('riga-time', true);
         });
-    </script>
+
+        // Chart
+        const chartData = @Html.Raw(Model.AdminStatistics.TripsPerLineHourlyJson);
+        renderTripsPerHourChart('tripsPerLineChart', chartData);
+
+        // Train Edit
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const row = btn.closest('tr');
+                const inputs = {
+                    name: row.querySelector('input[name="TrainName"]'),
+                    line: row.querySelector('select[name="LineID"]'),
+                    start: row.querySelector('input[name="StartWorkTime"]'),
+                    end: row.querySelector('input[name="EndWorkTime"]'),
+                    statusDisp: row.querySelector('.status-display'),
+                    statusSel: row.querySelector('.status-editor')
+                };
+                const isSaving = btn.textContent === 'Save';
+
+                if (!isSaving) {
+                    inputs.name.disabled = false;
+                    inputs.line.disabled = false;
+                    inputs.start.disabled = false;
+                    inputs.end.disabled = false;
+                    inputs.statusDisp.classList.add('d-none');
+                    inputs.statusSel.classList.remove('d-none');
+                    inputs.statusSel.value = inputs.statusSel.dataset.value;
+                    btn.textContent = 'Save';
+                    btn.classList.replace('btn-outline-primary', 'btn-primary');
+                } else {
+                    if (inputs.start.value >= inputs.end.value) {
+                        alert('The start time must be earlier than the end time.');
+                        return;
+                    }
+                    const formData = {
+                        TrainID: row.dataset.trainId,
+                        TrainName: inputs.name.value,
+                        LineID: inputs.line.value,
+                        StartWorkTime: inputs.start.value,
+                        EndWorkTime: inputs.end.value,
+                        IsActive: inputs.statusSel.value === 'true'
+                    };
+                    fetch('/Admin/UpdateTrain', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                        },
+                        body: JSON.stringify(formData)
+                    })
+                    .then(r => {
+                        if (!r.ok) throw '';
+                        location.reload();
+                    })
+                    .catch(() => alert('Failed to save'));
+                }
+            });
+        });
+
+        // Remove Train
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.closest('tr').dataset.trainId;
+                if (!confirm('Удалить поезд?')) return;
+                fetch('/Admin/DeleteTrain', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    },
+                    body: JSON.stringify(id)
+                })
+                .then(r => {
+                    if (!r.ok) return r.text().then(t => { throw t; });
+                    location.reload();
+                })
+                .catch(err => alert(err || 'Delete error'));
+            });
+        });
+
+        // Create Train
+        document.getElementById('createTrainBtn').addEventListener('click', () => {
+            const form = document.getElementById('createTrainForm');
+            if (!form.checkValidity()) { form.reportValidity(); return; }
+            const data = Object.fromEntries(new FormData(form).entries());
+            data.IsActive = data.IsActive === 'true';
+
+            fetch('/Admin/CreateTrain', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                },
+                body: JSON.stringify(data)
+            })
+            .then(r => {
+                if (!r.ok) return r.text().then(t => { throw t; });
+                location.reload();
+            })
+            .catch(err => alert(err || 'Create error'));
+        });
+
+        // Clock
+        setupRigaClock('riga-time', true);
+    });
+</script>
 }
-}
+
