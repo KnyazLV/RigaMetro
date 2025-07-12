@@ -3,74 +3,36 @@
     Layout = "_AdminLayout";
 }
 
-<aside class="admin-sidebar d-flex flex-column justify-content-between align-items-center">
-    <div class="py-3">
-        <div class="admin-sidebar-header d-flex flex-column align-items-center">
-            <img src="~/images/RigaMetroLogo.svg" style="height: 80px;" alt="Admin"/>
-            <div class="d-flex flex-column z-1">
-                <div class="lang-switch mt-1">
-                    <a asp-action="ChangeLanguage" asp-controller="Home"
-                       asp-route-culture="lv-LV"
-                       asp-route-returnUrl="@Context.Request.Path"
-                       class="lang-link @(CultureInfo.CurrentUICulture.Name=="lv-LV" ? "active" : "")">LV</a>
-                    <span class="lang-divider">|</span>
-                    <a asp-action="ChangeLanguage" asp-controller="Home"
-                       asp-route-culture="en-US"
-                       asp-route-returnUrl="@Context.Request.Path"
-                       class="lang-link @(CultureInfo.CurrentUICulture.Name=="en-US" ? "active" : "")">EN</a>
-                    <span class="lang-divider">|</span>
-                    <a asp-action="ChangeLanguage" asp-controller="Home"
-                       asp-route-culture="ru-RU"
-                       asp-route-returnUrl="@Context.Request.Path"
-                       class="lang-link @(CultureInfo.CurrentUICulture.Name=="ru-RU" ? "active" : "")">RU</a>
-                </div>
-            </div>
-            <div id="riga-time" class="riga-time text-center"></div>
-        </div>
-        <nav class="admin-nav flex-grow-1 mt-4">
-            <ul class="nav flex-column gap-2">
-                <li>
-                    <button class="admin-nav-link active" data-tab="dashboard">
-                        <span class="admin-nav-link-text">@Localization.GetKey("Dashboard")</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="admin-nav-link" data-tab="trains">
-                        <span class="admin-nav-link-text">@Localization.GetKey("Trains")</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="admin-nav-link" data-tab="lines">
-                        <span class="admin-nav-link-text">@Localization.GetKey("Lines")</span>
-                    </button>
-                </li>
-                <li>
-                    <button class="admin-nav-link" data-tab="export">
-                        <span class="admin-nav-link-text">@Localization.GetKey("Export")</span>
-                    </button>
-                </li>
-                <li>
-                    <a class="admin-nav-link admin-nav-link-action" href="@Url.Action("Index", "Home")">
-                        <span class="admin-nav-link-text">@Localization.GetKey("OpenMap")</span>
-                    </a>
-                </li>
-                <li>
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="w-100">
-                        <button type="submit" class="admin-nav-link admin-nav-link-action w-100"
-                                formaction="@Url.Action("Logout", "Account")" formmethod="post">
-                            <span class="admin-nav-link-text">@Localization.GetKey("Logout")</span>
-                        </button>
-                    </form>
-                </li>
-            </ul>
-        </nav>
+<header
+    class="d-md-none text-white py-2 px-3 d-flex align-items-center justify-content-between position-fixed w-100 top-0 start-0"
+    style="z-index: 1055; background: var(--color-bg-darker);">
+    <input type="checkbox" id="burger-checkbox" class="burger-checkbox d-md-none" autocomplete="off">
+    <label class="burger d-md-none" for="burger-checkbox">
+        <span></span>
+        <span></span>
+        <span></span>
+    </label>
+    <span class="ms-2 fw-bold">@Localization.GetKey("AdminPanel")</span>
+</header>
+
+
+<!-- Mobile aside bar -->
+<div class="offcanvas offcanvas-start d-md-none bg-dark text-white" tabindex="-1" id="adminSidebarOffcanvas"
+     aria-labelledby="adminSidebarLabel">
+    <div class="offcanvas-header">
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <footer style="font-weight: 200;" class="admin-sidebar-footer py-3 px-3">
-        <p>@Localization.GetKey("MadeBy")</p>
-        <p>@Localization.GetKey("Copyright", @DateTime.Now.Year)</p>
-    </footer>
+    <div class="offcanvas-body p-0 d-flex flex-column justify-content-between">
+        @await Html.PartialAsync("_AdminSidebarContent", new { clockId = "riga-time-mobile" })
+    </div>
+</div>
+
+<!-- Desktop aside bar -->
+<aside class="admin-sidebar d-none d-md-flex flex-column justify-content-between align-items-center">
+    @await Html.PartialAsync("_AdminSidebarContent", new { clockId = "riga-time-desktop" })
 </aside>
-<section class="admin-main-content">
+
+<section class="admin-main-content mt-3">
     <div id="admin-tab-dashboard" class="admin-tab-content">
         <h2 class="mb-3 text-uppercase" style="font-weight:700;">@Localization.GetKey("SummaryStatistics")</h2>
         <div class="table-responsive">
@@ -173,9 +135,9 @@
                                    disabled/>
                         </td>
                         <td data-order="@(train.IsActive ? "Active" : "Inactive")">
-            <span class="badge @(train.IsActive ? "bg-success" : "bg-secondary") status-display">
-                @(train.IsActive ? "Active" : "Inactive")
-            </span>
+                            <span class="badge @(train.IsActive ? "bg-success" : "bg-secondary") status-display">
+                                @(train.IsActive ? "Active" : "Inactive")
+                            </span>
                             <select name="IsActive"
                                     class="form-select form-select-sm status-editor d-none"
                                     data-value="@train.IsActive.ToString().ToLower()">
@@ -183,9 +145,13 @@
                                 <option value="false">@Localization.GetKey("Inactive")</option>
                             </select>
                         </td>
-                        <td>
-                            <button type="button" class="btn btn-sm btn-outline-primary edit-btn">@Localization.GetKey("Edit")</button>
-                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn">@Localization.GetKey("Delete")</button>
+                        <td class="text-nowrap" style="min-width: 120px;">
+                            <div class="d-inline-flex gap-2 w-100">
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-primary edit-btn flex-fill">@Localization.GetKey("Edit")</button>
+                                <button type="button"
+                                        class="btn btn-sm btn-outline-danger delete-btn flex-fill">@Localization.GetKey("Delete")</button>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -233,8 +199,10 @@
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localization.GetKey("Cancel")</button>
-                        <button type="button" id="createTrainBtn" class="btn btn-primary">@Localization.GetKey("Create")</button>
+                        <button type="button" class="btn btn-secondary"
+                                data-bs-dismiss="modal">@Localization.GetKey("Cancel")</button>
+                        <button type="button" id="createTrainBtn"
+                                class="btn btn-primary">@Localization.GetKey("Create")</button>
                     </div>
                 </div>
             </div>
@@ -278,7 +246,8 @@
                                    disabled/>
                         </td>
                         <td>
-                            <button type="button" class="btn btn-sm btn-outline-primary edit-line-btn">@Localization.GetKey("Edit")</button>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-primary edit-line-btn">@Localization.GetKey("Edit")</button>
                         </td>
                     </tr>
                 }
@@ -296,6 +265,9 @@
         import {renderTripsPerHourChart} from '/js/trips-per-hour-chart.js';
 
         document.addEventListener('DOMContentLoaded', function () {
+
+            //#region AdminNavigation
+
             const navLinks = document.querySelectorAll('.admin-nav-link');
             const tabContents = document.querySelectorAll('.admin-tab-content');
 
@@ -308,13 +280,20 @@
                 });
             });
 
+            //#endregion
+
+            //#region Chart
+
             const chartData = @Html.Raw(Model.AdminStatistics.TripsPerLineHourlyJson);
             renderTripsPerHourChart('tripsPerLineChart', chartData);
+
+            //#endregion
+
+            //#region TrainTableCRUD
 
             const editText = '@Html.Raw(@Localization.GetKey("Edit"))';
             const saveText = '@Html.Raw(@Localization.GetKey("Save"))';
 
-            // Train Edit
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const row = btn.closest('tr');
@@ -330,7 +309,6 @@
                     const isSaving = btn.textContent.trim() === saveText;
 
                     if (!isSaving) {
-                        // Включаем режим редактирования
                         inputs.name.disabled = false;
                         inputs.line.disabled = false;
                         inputs.start.disabled = false;
@@ -342,7 +320,6 @@
                         btn.textContent = saveText;
                         btn.classList.replace('btn-outline-primary', 'btn-primary');
                     } else {
-                        // Сохраняем изменения
                         if (inputs.start.value >= inputs.end.value) {
                             alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))');
                             return;
@@ -376,7 +353,6 @@
                 });
             });
 
-            // Remove Train
             document.querySelectorAll('.delete-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const id = btn.closest('tr').dataset.trainId;
@@ -391,14 +367,15 @@
                         body: JSON.stringify(id)
                     })
                         .then(r => {
-                            if (!r.ok) return r.text().then(t => { throw new Error(t); });
+                            if (!r.ok) return r.text().then(t => {
+                                throw new Error(t);
+                            });
                             location.reload();
                         })
                         .catch(err => alert(err.message || 'Delete error'));
                 });
             });
 
-            // Create Train
             document.getElementById('createTrainBtn').addEventListener('click', () => {
                 const form = document.getElementById('createTrainForm');
                 if (!form.checkValidity()) {
@@ -418,13 +395,18 @@
                     body: JSON.stringify(data)
                 })
                     .then(r => {
-                        if (!r.ok) return r.text().then(t => { throw new Error(t); });
+                        if (!r.ok) return r.text().then(t => {
+                            throw new Error(t);
+                        });
                         location.reload();
                     })
                     .catch(err => alert(err.message || 'Create error'));
             });
 
-            // Edit Line
+            //#endregion
+
+            //#region LineTableCRUD
+
             document.querySelectorAll('.edit-line-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const row = btn.closest('tr');
@@ -465,7 +447,9 @@
                             body: JSON.stringify(data)
                         })
                             .then(r => {
-                                if (!r.ok) return r.text().then(t => { throw new Error(t); });
+                                if (!r.ok) return r.text().then(t => {
+                                    throw new Error(t);
+                                });
                                 location.reload();
                             })
                             .catch(err => {
@@ -475,7 +459,9 @@
                 });
             });
 
-            setupRigaClock('riga-time', true);
+            //#endregion
+
+            //#region DataTable
 
             $('#trainsTable').DataTable({
                 "autoWidth": false,
@@ -485,13 +471,296 @@
                 "info": false,
                 "lengthChange": false,
                 "columnDefs": [
-                    { "orderable": false, "targets": 6 },
+                    {"orderable": false, "targets": 6},
                 ],
                 "language": {
                     "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
                 }
             });
+
+            //#endregion
+
+            //#region MobileDesign
+
+            const offcanvasEl = document.getElementById('adminSidebarOffcanvas');
+            const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl);
+            const burgerCheckbox = document.getElementById('burger-checkbox');
+
+            burgerCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    bsOffcanvas.show();
+                } else {
+                    bsOffcanvas.hide();
+                }
+            });
+
+            offcanvasEl.addEventListener('hidden.bs.offcanvas', function () {
+                burgerCheckbox.checked = false;
+            });
+            offcanvasEl.addEventListener('shown.bs.offcanvas', function () {
+                burgerCheckbox.checked = true;
+            });
+
+            offcanvasEl.querySelectorAll('.admin-nav-link, .admin-nav-link-action').forEach(link => {
+                link.addEventListener('click', function () {
+                    if (window.innerWidth < 768) {
+                        bsOffcanvas.hide();
+                    }
+                });
+            });
+
+            //#endregion
+
+            //#region Clocks
+
+            setupRigaClock('riga-time-desktop', true);
+            setupRigaClock('riga-time-mobile', true);
+
+            //#endregion
+
         });
     </script>
+
+    @* <script type="module"> *@
+    @*     import {renderTripsPerHourChart} from '/js/trips-per-hour-chart.js'; *@
+    @* *@
+    @*     document.addEventListener('DOMContentLoaded', function () { *@
+    @*         const navLinks = document.querySelectorAll('.admin-nav-link'); *@
+    @*         const tabContents = document.querySelectorAll('.admin-tab-content'); *@
+    @* *@
+    @*         navLinks.forEach(link => { *@
+    @*             link.addEventListener('click', function () { *@
+    @*                 navLinks.forEach(l => l.classList.remove('active')); *@
+    @*                 this.classList.add('active'); *@
+    @*                 tabContents.forEach(tc => tc.classList.add('d-none')); *@
+    @*                 document.getElementById('admin-tab-' + this.getAttribute('data-tab')).classList.remove('d-none'); *@
+    @*             }); *@
+    @*         }); *@
+    @* *@
+    @*         const chartData = @Html.Raw(Model.AdminStatistics.TripsPerLineHourlyJson); *@
+    @*         renderTripsPerHourChart('tripsPerLineChart', chartData); *@
+    @* *@
+    @*         const editText = '@Html.Raw(@Localization.GetKey("Edit"))'; *@
+    @*         const saveText = '@Html.Raw(@Localization.GetKey("Save"))'; *@
+    @* *@
+    @*         // Train Edit *@
+    @*         document.querySelectorAll('.edit-btn').forEach(btn => { *@
+    @*             btn.addEventListener('click', () => { *@
+    @*                 const row = btn.closest('tr'); *@
+    @*                 const inputs = { *@
+    @*                     name: row.querySelector('input[name="TrainName"]'), *@
+    @*                     line: row.querySelector('select[name="LineID"]'), *@
+    @*                     start: row.querySelector('input[name="StartWorkTime"]'), *@
+    @*                     end: row.querySelector('input[name="EndWorkTime"]'), *@
+    @*                     statusDisp: row.querySelector('.status-display'), *@
+    @*                     statusSel: row.querySelector('.status-editor') *@
+    @*                 }; *@
+    @* *@
+    @*                 const isSaving = btn.textContent.trim() === saveText; *@
+    @* *@
+    @*                 if (!isSaving) { *@
+    @*                     // Включаем режим редактирования *@
+    @*                     inputs.name.disabled = false; *@
+    @*                     inputs.line.disabled = false; *@
+    @*                     inputs.start.disabled = false; *@
+    @*                     inputs.end.disabled = false; *@
+    @*                     inputs.statusDisp.classList.add('d-none'); *@
+    @*                     inputs.statusSel.classList.remove('d-none'); *@
+    @*                     inputs.statusSel.value = inputs.statusSel.dataset.value; *@
+    @* *@
+    @*                     btn.textContent = saveText; *@
+    @*                     btn.classList.replace('btn-outline-primary', 'btn-primary'); *@
+    @*                 } else { *@
+    @*                     // Сохраняем изменения *@
+    @*                     if (inputs.start.value >= inputs.end.value) { *@
+    @*                         alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))'); *@
+    @*                         return; *@
+    @*                     } *@
+    @* *@
+    @*                     const formData = { *@
+    @*                         TrainID: row.dataset.trainId, *@
+    @*                         TrainName: inputs.name.value, *@
+    @*                         LineID: inputs.line.value, *@
+    @*                         StartWorkTime: inputs.start.value, *@
+    @*                         EndWorkTime: inputs.end.value, *@
+    @*                         IsActive: inputs.statusSel.value === 'true' *@
+    @*                     }; *@
+    @* *@
+    @*                     fetch('/Admin/UpdateTrain', { *@
+    @*                         method: 'POST', *@
+    @*                         headers: { *@
+    @*                             'Content-Type': 'application/json', *@
+    @*                             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
+    @*                         }, *@
+    @*                         body: JSON.stringify(formData) *@
+    @*                     }) *@
+    @*                         .then(r => { *@
+    @*                             if (!r.ok) throw new Error('Update failed'); *@
+    @*                             location.reload(); *@
+    @*                         }) *@
+    @*                         .catch(() => { *@
+    @*                             alert('@Html.Raw(@Localization.GetKey("FailedToSave"))'); *@
+    @*                         }); *@
+    @*                 } *@
+    @*             }); *@
+    @*         }); *@
+    @* *@
+    @*         // Remove Train *@
+    @*         document.querySelectorAll('.delete-btn').forEach(btn => { *@
+    @*             btn.addEventListener('click', () => { *@
+    @*                 const id = btn.closest('tr').dataset.trainId; *@
+    @*                 if (!confirm('@Html.Raw(@Localization.GetKey("RemoveTrain"))')) return; *@
+    @* *@
+    @*                 fetch('/Admin/DeleteTrain', { *@
+    @*                     method: 'POST', *@
+    @*                     headers: { *@
+    @*                         'Content-Type': 'application/json', *@
+    @*                         'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
+    @*                     }, *@
+    @*                     body: JSON.stringify(id) *@
+    @*                 }) *@
+    @*                     .then(r => { *@
+    @*                         if (!r.ok) return r.text().then(t => { *@
+    @*                             throw new Error(t); *@
+    @*                         }); *@
+    @*                         location.reload(); *@
+    @*                     }) *@
+    @*                     .catch(err => alert(err.message || 'Delete error')); *@
+    @*             }); *@
+    @*         }); *@
+    @* *@
+    @*         // Create Train *@
+    @*         document.getElementById('createTrainBtn').addEventListener('click', () => { *@
+    @*             const form = document.getElementById('createTrainForm'); *@
+    @*             if (!form.checkValidity()) { *@
+    @*                 form.reportValidity(); *@
+    @*                 return; *@
+    @*             } *@
+    @* *@
+    @*             const data = Object.fromEntries(new FormData(form).entries()); *@
+    @*             data.IsActive = data.IsActive === 'true'; *@
+    @* *@
+    @*             fetch('/Admin/CreateTrain', { *@
+    @*                 method: 'POST', *@
+    @*                 headers: { *@
+    @*                     'Content-Type': 'application/json', *@
+    @*                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
+    @*                 }, *@
+    @*                 body: JSON.stringify(data) *@
+    @*             }) *@
+    @*                 .then(r => { *@
+    @*                     if (!r.ok) return r.text().then(t => { *@
+    @*                         throw new Error(t); *@
+    @*                     }); *@
+    @*                     location.reload(); *@
+    @*                 }) *@
+    @*                 .catch(err => alert(err.message || 'Create error')); *@
+    @*         }); *@
+    @* *@
+    @*         // Edit Line *@
+    @*         document.querySelectorAll('.edit-line-btn').forEach(btn => { *@
+    @*             btn.addEventListener('click', () => { *@
+    @*                 const row = btn.closest('tr'); *@
+    @*                 const inputs = { *@
+    @*                     start: row.querySelector('input[name="StartWorkTime"]'), *@
+    @*                     end: row.querySelector('input[name="EndWorkTime"]'), *@
+    @*                     color: row.querySelector('input[name="Color"]') *@
+    @*                 }; *@
+    @* *@
+    @*                 const isSaving = btn.textContent.trim() === saveText; *@
+    @* *@
+    @*                 if (!isSaving) { *@
+    @*                     inputs.start.disabled = false; *@
+    @*                     inputs.end.disabled = false; *@
+    @*                     inputs.color.disabled = false; *@
+    @* *@
+    @*                     btn.textContent = saveText; *@
+    @*                     btn.classList.replace('btn-outline-primary', 'btn-primary'); *@
+    @*                 } else { *@
+    @*                     if (inputs.start.value >= inputs.end.value) { *@
+    @*                         alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))'); *@
+    @*                         return; *@
+    @*                     } *@
+    @* *@
+    @*                     const data = { *@
+    @*                         LineID: row.dataset.lineId, *@
+    @*                         StartWorkTime: inputs.start.value, *@
+    @*                         EndWorkTime: inputs.end.value, *@
+    @*                         Color: inputs.color.value *@
+    @*                     }; *@
+    @* *@
+    @*                     fetch('/Admin/UpdateLine', { *@
+    @*                         method: 'POST', *@
+    @*                         headers: { *@
+    @*                             'Content-Type': 'application/json', *@
+    @*                             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
+    @*                         }, *@
+    @*                         body: JSON.stringify(data) *@
+    @*                     }) *@
+    @*                         .then(r => { *@
+    @*                             if (!r.ok) return r.text().then(t => { *@
+    @*                                 throw new Error(t); *@
+    @*                             }); *@
+    @*                             location.reload(); *@
+    @*                         }) *@
+    @*                         .catch(err => { *@
+    @*                             alert(err.message || '@Html.Raw(@Localization.GetKey("FailedToUpdateLine"))'); *@
+    @*                         }); *@
+    @*                 } *@
+    @*             }); *@
+    @*         }); *@
+    @* *@
+    @*         // Sort table *@
+    @*         $('#trainsTable').DataTable({ *@
+    @*             "autoWidth": false, *@
+    @*             "paging": false, *@
+    @*             "searching": false, *@
+    @*             "ordering": true, *@
+    @*             "info": false, *@
+    @*             "lengthChange": false, *@
+    @*             "columnDefs": [ *@
+    @*                 {"orderable": false, "targets": 6}, *@
+    @*             ], *@
+    @*             "language": { *@
+    @*                 "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json" *@
+    @*             } *@
+    @*         }); *@
+    @* *@
+    @*         // Mobile design code *@
+    @*         const offcanvasEl = document.getElementById('adminSidebarOffcanvas'); *@
+    @*         const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl); *@
+    @*         const burgerCheckbox = document.getElementById('burger-checkbox'); *@
+    @* *@
+    @* *@
+    @*         // Открыть меню по чекбоксу *@
+    @*         burgerCheckbox.addEventListener('change', function () { *@
+    @*             if (this.checked) { *@
+    @*                 bsOffcanvas.show(); *@
+    @*             } else { *@
+    @*                 bsOffcanvas.hide(); *@
+    @*             } *@
+    @*         }); *@
+    @*          *@
+    @*         offcanvasEl.addEventListener('hidden.bs.offcanvas', function () { *@
+    @*             burgerCheckbox.checked = false; *@
+    @*         }); *@
+    @*         offcanvasEl.addEventListener('shown.bs.offcanvas', function () { *@
+    @*             burgerCheckbox.checked = true; *@
+    @*         }); *@
+    @* *@
+    @*         // Закрывать меню при выборе пункта *@
+    @*         offcanvasEl.querySelectorAll('.admin-nav-link, .admin-nav-link-action').forEach(link => { *@
+    @*             link.addEventListener('click', function () { *@
+    @*                 if (window.innerWidth < 768) { *@
+    @*                     bsOffcanvas.hide(); *@
+    @*                 } *@
+    @*             }); *@
+    @*         }); *@
+    @* *@
+    @*         setupRigaClock('riga-time-desktop', true); *@
+    @*         setupRigaClock('riga-time-mobile', true); *@
+    @* *@
+    @*     }); *@
+    @* </script> *@
 }
 

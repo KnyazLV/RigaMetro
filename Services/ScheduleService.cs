@@ -79,18 +79,6 @@ public class ScheduleService : IScheduleService {
             .ThenInclude(ls => ls.Station)
             .FirstAsync(l => l.LineID == lineId);
     }
-
-    // private (DateTime start, DateTime end) CalculateWorkWindow(Train train, Line line, DateTime workDate) {
-    //     var date = workDate.Date;
-    //     var lineStart = line.StartWorkTime.TimeOfDay;
-    //     var lineEnd = line.EndWorkTime.TimeOfDay;
-    //     var trainStart = train.StartWorkTime;
-    //     var trainEnd = train.EndWorkTime;
-    //
-    //     var startOffset = lineStart > trainStart ? lineStart : trainStart;
-    //     var endOffset = lineEnd < trainEnd ? lineEnd : trainEnd;
-    //     return (date + startOffset, date + endOffset);
-    // }
     
     private (DateTime start, DateTime end) CalculateWorkWindow(Train train, Line line, DateTime workDate) {
         var date = workDate.Date;

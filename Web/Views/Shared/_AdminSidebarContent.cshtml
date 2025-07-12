@@ -1,0 +1,66 @@
+﻿@* _AdminSidebarContent.cshtml *@
+<div class="py-3">
+    <div class="admin-sidebar-header d-flex flex-column align-items-center">
+        <img src="~/images/RigaMetroLogo.svg" style="height: 80px;" alt="Admin"/>
+        <div class="d-flex flex-column z-1">
+            <div class="lang-switch mt-1">
+                <a asp-action="ChangeLanguage" asp-controller="Home"
+                   asp-route-culture="lv-LV"
+                   asp-route-returnUrl="@Context.Request.Path"
+                   class="lang-link @(CultureInfo.CurrentUICulture.Name=="lv-LV" ? "active" : "")">LV</a>
+                <span class="lang-divider">|</span>
+                <a asp-action="ChangeLanguage" asp-controller="Home"
+                   asp-route-culture="en-US"
+                   asp-route-returnUrl="@Context.Request.Path"
+                   class="lang-link @(CultureInfo.CurrentUICulture.Name=="en-US" ? "active" : "")">EN</a>
+                <span class="lang-divider">|</span>
+                <a asp-action="ChangeLanguage" asp-controller="Home"
+                   asp-route-culture="ru-RU"
+                   asp-route-returnUrl="@Context.Request.Path"
+                   class="lang-link @(CultureInfo.CurrentUICulture.Name=="ru-RU" ? "active" : "")">RU</a>
+            </div>
+        </div>
+        <div id="@Model.clockId" class="riga-time text-center"></div>
+    </div>
+    <nav class="admin-nav flex-grow-1 mt-4">
+        <ul class="nav flex-column gap-2">
+            <li>
+                <button class="admin-nav-link active" data-tab="dashboard">
+                    <span class="admin-nav-link-text">@Localization.GetKey("Dashboard")</span>
+                </button>
+            </li>
+            <li>
+                <button class="admin-nav-link" data-tab="trains">
+                    <span class="admin-nav-link-text">@Localization.GetKey("Trains")</span>
+                </button>
+            </li>
+            <li>
+                <button class="admin-nav-link" data-tab="lines">
+                    <span class="admin-nav-link-text">@Localization.GetKey("Lines")</span>
+                </button>
+            </li>
+            <li>
+                <button class="admin-nav-link" data-tab="export">
+                    <span class="admin-nav-link-text">@Localization.GetKey("Export")</span>
+                </button>
+            </li>
+            <li>
+                <a class="admin-nav-link admin-nav-link-action" href="@Url.Action("Index", "Home")">
+                    <span class="admin-nav-link-text">@Localization.GetKey("OpenMap")</span>
+                </a>
+            </li>
+            <li>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="w-100">
+                    <button type="submit" class="admin-nav-link admin-nav-link-action w-100"
+                            formaction="@Url.Action("Logout", "Account")" formmethod="post">
+                        <span class="admin-nav-link-text">@Localization.GetKey("Logout")</span>
+                    </button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</div>
+<footer style="font-weight: 200;" class="admin-sidebar-footer py-3 px-3">
+    <p>@Localization.GetKey("MadeBy")</p>
+    <p>@Localization.GetKey("Copyright", @DateTime.Now.Year)</p>
+</footer>

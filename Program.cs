@@ -29,7 +29,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     });
 
 // Localization Configuration
-
 builder.Services.AddSingleton<LanguageService>();
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 builder.Services.AddMvc().AddViewLocalization().AddDataAnnotationsLocalization(options => {
@@ -49,21 +48,6 @@ builder.Services.Configure<RequestLocalizationOptions>(options => {
     options.SupportedUICultures = supportedCultures;
     options.RequestCultureProviders.Insert(0, new QueryStringRequestCultureProvider());
 });
-
-// builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
-//
-// var supportedCultures = new[] { "en-US", "ru-RU", "lv-LV" };
-// var localizationOptions = new RequestLocalizationOptions()
-//     .SetDefaultCulture(supportedCultures[0])
-//     .AddSupportedCultures(supportedCultures)
-//     .AddSupportedUICultures(supportedCultures); 
-//
-//
-// builder.Services.AddControllersWithViews()
-//     .AddViewLocalization(Microsoft.AspNetCore.Mvc.Razor.LanguageViewLocationExpanderFormat.Suffix)
-//     .AddDataAnnotationsLocalization(opts =>
-//         opts.DataAnnotationLocalizerProvider =
-//             (_, factory) => factory.Create(typeof(SharedResources)));
 
 // Business Services
 builder.Services.AddScoped<DistanceSeeder>();
@@ -88,7 +72,6 @@ if (!app.Environment.IsDevelopment()) {
 app.UseHttpsRedirection();
 app.MapStaticAssets();
 app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
-// app.UseRequestLocalization(localizationOptions);
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -96,7 +79,7 @@ app.UseAuthorization();
 // Routing
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Admin}/{action=Index}/{id?}");
 
 // Database Seeding
 using (var scope = app.Services.CreateScope()) {

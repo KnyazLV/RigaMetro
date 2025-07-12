@@ -3,7 +3,7 @@
   var actionDescriptor = Context.GetEndpoint()?.Metadata.GetMetadata<ControllerActionDescriptor>();
   var currentController = actionDescriptor?.ControllerName;
   var currentAction = actionDescriptor?.ActionName;
-  var showAdminBar = User.Identity.IsAuthenticated 
+  var showAdminBar = User.Identity.IsAuthenticated
                      && User.IsInRole("Admin")
                      && !(currentController == "Admin" && currentAction == "Index");
 }
@@ -11,20 +11,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width"/>
   <title>@ViewBag.Title | RigaMetro</title>
   <link rel="icon" type="image/png" sizes="16x16" href="~/images/favicon.ico">
   <link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"/>
-  <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="~/css/site.css" />
+  <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css"/>
+  <link rel="stylesheet" href="~/css/site.css"/>
 </head>
 <body class="@(showAdminBar ? "admin-bar-active" : "")">
 @if (showAdminBar) {
   <div class="admin-top-bar d-flex justify-content-between align-items-center">
     <div class="container-fluid d-flex justify-content-between align-items-center px-3">
       <div class="admin-bar-title d-flex align-items-center gap-2 py-1">
-        @* <span>@Localizer["RigaMetroAdminPanel"]</span> *@
         <span>@Localization.GetKey("RigaMetroAdminPanel")</span>
       </div>
       <div class="admin-bar-actions d-flex align-items-center gap-2">
@@ -33,15 +32,16 @@
           @Localization.GetKey("OpenAdmin")
         </a>
         <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
-          <button type="submit" style="padding: 4px; border-width: 2px;" class="btn btn-outline-light d-flex align-items-center" title="@Localization.GetKey("Logout")">
-            <img src="~/images/logout.svg" alt="@Localization.GetKey("Logout")" style="width:20px;height:20px;display:block;" />
+          <button type="submit" style="padding: 4px; border-width: 2px;"
+                  class="btn btn-outline-light d-flex align-items-center" title="@Localization.GetKey("Logout")">
+            <img src="~/images/logout.svg" alt="@Localization.GetKey("Logout")"
+                 style="width:20px;height:20px;display:block;"/>
           </button>
         </form>
       </div>
     </div>
   </div>
 }
-
 
 <header>
   <nav class="navbar navbar-expand-lg">
@@ -55,17 +55,17 @@
           <a asp-action="ChangeLanguage" asp-controller="Home"
              asp-route-culture="lv-LV"
              asp-route-returnUrl="@Context.Request.Path"
-             class="lang-link @(CultureInfo.CurrentUICulture.Name=="lv-LV" ? "active" : "")">LV</a>
+             class="lang-link @(CultureInfo.CurrentUICulture.Name == "lv-LV" ? "active" : "")">LV</a>
           <span class="lang-divider">|</span>
           <a asp-action="ChangeLanguage" asp-controller="Home"
              asp-route-culture="en-US"
              asp-route-returnUrl="@Context.Request.Path"
-             class="lang-link @(CultureInfo.CurrentUICulture.Name=="en-US" ? "active" : "")">EN</a>
+             class="lang-link @(CultureInfo.CurrentUICulture.Name == "en-US" ? "active" : "")">EN</a>
           <span class="lang-divider">|</span>
           <a asp-action="ChangeLanguage" asp-controller="Home"
              asp-route-culture="ru-RU"
              asp-route-returnUrl="@Context.Request.Path"
-             class="lang-link @(CultureInfo.CurrentUICulture.Name=="ru-RU" ? "active" : "")">RU</a>
+             class="lang-link @(CultureInfo.CurrentUICulture.Name == "ru-RU" ? "active" : "")">RU</a>
         </div>
       </div>
     </div>
@@ -74,27 +74,36 @@
 <main class="container-fluid px-3" role="main">
   @RenderBody()
 </main>
-<footer class="site-footer d-flex flex-column flex-md-row justify-content-between align-items-center p-3 gap-3 gap-md-0 text-white" style="font-weight: 200; background-color: var(--color-bg-darker)">
-  <div class="text-center text-md-start">
-    <p>@Localization.GetKey("MadeBy")</p>
-    <p>@Localization.GetKey("Copyright", DateTime.Now.Year)</p>
-  </div>
-  <a class="footer-link my-2 my-md-0" href="https://github.com/KnyazLV/RigaMetro" style="text-decoration: underline" target="_blank">@Localization.GetKey("SourceCode")</a>
-  <div class="text-center text-md-end">
-    <h4 class="text-uppercase mb-2 mb-md-0" style="color: var(--color-accent); font-weight: bold; font-size: 20px">@Localization.GetKey("Contacts")</h4>
-    <div class="d-flex flex-column flex-md-row gap-2 gap-md-3 justify-content-center justify-content-md-end align-items-center" style="font-weight: normal">
-      <a class="footer-link" href="https://github.com/KnyazLV" target="_blank">GitHub</a>
-      <a class="footer-link" href="https://www.linkedin.com/in/rostislavs-belovs/" target="_blank">LinkedIn</a>
-      <a class="footer-link" href="mailto:r.belovs@inbox.lv">r.belovs@gmail.com</a>
+<footer class="container-fluid py-3" style="background-color: var(--color-bg-darker); font-weight: 200;">
+  <div class="row align-items-center">
+    <div class="col-12 col-md-4 text-center text-md-start mb-2 mb-md-0">
+      <p>@Localization.GetKey("MadeBy")</p>
+      <p>@Localization.GetKey("Copyright", DateTime.Now.Year)</p>
+    </div>
+    <div class="col-12 col-md-4 d-flex justify-content-center mb-2 mb-md-0">
+      <a class="footer-link" href="https://github.com/KnyazLV/RigaMetro" style="text-decoration: underline"
+         target="_blank">
+        @Localization.GetKey("SourceCode")
+      </a>
+    </div>
+    <div class="col-12 col-md-4 text-center text-md-end">
+      <h4 class="text-uppercase mb-2 mb-md-0"
+          style="color: var(--color-accent); font-weight: bold; font-size: 20px">@Localization.GetKey("Contacts")</h4>
+      <div
+        class="d-flex flex-column flex-md-row gap-2 gap-md-3 justify-content-center justify-content-md-end align-items-center"
+        style="font-weight: normal">
+        <a class="footer-link" href="https://github.com/KnyazLV" target="_blank">GitHub</a>
+        <a class="footer-link" href="https://www.linkedin.com/in/rostislavs-belovs/" target="_blank">LinkedIn</a>
+        <a class="footer-link" href="mailto:r.belovs@inbox.lv">r.belovs@gmail.com</a>
+      </div>
     </div>
   </div>
 </footer>
 
-
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 <script src="~/js/riga-clock.js"></script>
-@RenderSection("Scripts", required: false)
+@RenderSection("Scripts", false)
 <script>
   setupRigaClock('riga-time', false);
 </script>

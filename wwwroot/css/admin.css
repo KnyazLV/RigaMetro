@@ -1,6 +1,6 @@
 ﻿@import url("common.css");
 
-/*#region AdminAsideBar*/
+/*#region AdminAsideBar */
 
 .admin-layout {
     display: flex;
@@ -27,6 +27,14 @@
     overflow-x: auto;
 }
 
+.admin-sidebar-footer {
+    width: 100%;
+}
+
+/*#endregion*/
+
+/*#region AdminSidebarHeader*/
+
 .admin-sidebar-header .riga-time-clock {
     font-size: 80px;
     margin-bottom: 0.05em;
@@ -42,6 +50,10 @@
     margin-top: 0;
     margin-bottom: 0;
 }
+
+/*#endregion*/
+
+/*#region AdminTabNavigation */
 
 .admin-nav-link {
     width: 100%;
@@ -114,8 +126,9 @@
     color: var(--color-accent);
 }
 
-
 /*#endregion*/
+
+/*#region AdminTabContent */
 
 .admin-tab-content {
     display: none;
@@ -124,11 +137,10 @@
     display: block;
 }
 
-.admin-sidebar-footer {
-    width: 100%;
-}
+/*#endregion*/
 
-/* контейнер фиксирует высоту графика и предотвращает «растягивание» страницы */
+/*#region ChartAndTables */
+
 .chart-container {
     background: #fff;
     border-radius: 12px;
@@ -139,4 +151,97 @@
     position: relative;
 }
 
+#trainsTable td .btn {
+    min-width: 80px;
+    white-space: nowrap;
+}
 
+.table-responsive {
+    overflow-x: auto;
+}
+
+/*#endregion*/
+
+/*#region MobileResponsive */
+
+@media (max-width: 767.98px) {
+    .admin-main-content {
+        padding-top: 56px;
+        padding-bottom: 70px;
+    }
+    .admin-sidebar {
+        display: none !important;
+    }
+
+    .admin-layout, .offcanvas.bg-dark {
+        background: var(--color-bg-darker) !important;
+    }
+
+    .site-footer, .site-footer-custom {
+        position: fixed;
+        left: 0; bottom: 0; width: 100vw;
+        z-index: 1050;
+        background: var(--color-bg-darker) !important;
+        border-top: 1px solid #222;
+    }
+}
+
+/*#endregion*/
+
+/*#region BurgerMenu*/
+
+.burger-checkbox {
+    position: absolute;
+    visibility: hidden;
+}
+
+.burger {
+    cursor: pointer;
+    display: block;
+    position: relative;
+    width: 40px;
+    height: 28px;
+    background: transparent;
+    border: none;
+    margin: 0;
+    z-index: 1060;
+}
+
+.burger span {
+    display: block;
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: #fff;
+    transition: .3s;
+}
+
+.burger span:nth-child(1) {
+    top: 0;
+}
+.burger span:nth-child(2) {
+    top: 12px;
+}
+.burger span:nth-child(3) {
+    top: 24px;
+}
+
+.burger-checkbox:checked + .burger span:nth-child(1) {
+    transform: translateY(12px) rotate(45deg);
+}
+.burger-checkbox:checked + .burger span:nth-child(2) {
+    opacity: 0;
+}
+.burger-checkbox:checked + .burger span:nth-child(3) {
+    transform: translateY(-12px) rotate(-45deg);
+}
+
+@media (max-width: 767.98px) {
+    .burger span {
+        background: #fff;
+    }
+}
+
+/*#endregion*/
