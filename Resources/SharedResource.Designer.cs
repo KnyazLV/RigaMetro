@@ -258,6 +258,15 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The tab for exporting the metro schedule is currently under development..
+        /// </summary>
+        internal static string ExportDisclaimer {
+            get {
+                return ResourceManager.GetString("ExportDisclaimer", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Failed to save.
         /// </summary>
         internal static string FailedToSave {

@@ -75,8 +75,8 @@
     <data name="EndWork" xml:space="preserve">
         <value>End Work</value>
     </data>
-    <data name="Export" xml:space="preserve">
-        <value>Export</value>
+    <data name="ExportDisclaimer" xml:space="preserve">
+        <value>The tab for exporting the metro schedule is currently under development.</value>
     </data>
     <data name="Inactive" xml:space="preserve">
         <value>Inactive</value>
@@ -212,5 +212,8 @@
     </data>
     <data name="RemoveTrain" xml:space="preserve">
         <value>Remove the train?</value>
+    </data>
+    <data name="Export" xml:space="preserve">
+        <value>Export</value>
     </data>
 </root>

@@ -249,11 +249,20 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Eksports.
+        ///   Looks up a localized string similar to Eksportēt.
         /// </summary>
         internal static string Export {
             get {
                 return ResourceManager.GetString("Export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Metro grafika eksportēšanas cilne tiek izstrādāta..
+        /// </summary>
+        internal static string ExportDisclaimer {
+            get {
+                return ResourceManager.GetString("ExportDisclaimer", resourceCulture);
             }
         }
         

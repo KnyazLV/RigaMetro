@@ -255,7 +255,16 @@
             </table>
         </div>
     </div>
-    <div id="admin-tab-export" class="admin-tab-content d-none">@Localization.GetKey("Export")</div>
+    <div id="admin-tab-export" class="admin-tab-content d-none">
+        <div class="d-flex flex-column justify-content-center align-items-center" style="min-height: 45vh;">
+            <span class="display-4 fw-bold text-center mb-3" style="letter-spacing: 0.03em; color: var(--color-accent); text-shadow: 0 2px 12px rgba(0,0,0,0.25);">
+                В разработке!
+            </span>
+            <span class="fs-3 text-center" style="color: #ddd;">
+                Вкладка для экспорта расписания метрополитена находится в процессе разработки.
+            </span>
+        </div>
+    </div>
 </section>
 
 
@@ -513,254 +522,14 @@
 
             //#region Clocks
 
-            setupRigaClock('riga-time-desktop', true);
-            setupRigaClock('riga-time-mobile', true);
+            window.currentCulture = '@System.Globalization.CultureInfo.CurrentUICulture.Name';
+            const locale = window.currentCulture || 'en-US';
+            setupRigaClock('riga-time-desktop', true, locale);
+            setupRigaClock('riga-time-mobile', true, locale);
 
             //#endregion
 
         });
     </script>
-
-    @* <script type="module"> *@
-    @*     import {renderTripsPerHourChart} from '/js/trips-per-hour-chart.js'; *@
-    @* *@
-    @*     document.addEventListener('DOMContentLoaded', function () { *@
-    @*         const navLinks = document.querySelectorAll('.admin-nav-link'); *@
-    @*         const tabContents = document.querySelectorAll('.admin-tab-content'); *@
-    @* *@
-    @*         navLinks.forEach(link => { *@
-    @*             link.addEventListener('click', function () { *@
-    @*                 navLinks.forEach(l => l.classList.remove('active')); *@
-    @*                 this.classList.add('active'); *@
-    @*                 tabContents.forEach(tc => tc.classList.add('d-none')); *@
-    @*                 document.getElementById('admin-tab-' + this.getAttribute('data-tab')).classList.remove('d-none'); *@
-    @*             }); *@
-    @*         }); *@
-    @* *@
-    @*         const chartData = @Html.Raw(Model.AdminStatistics.TripsPerLineHourlyJson); *@
-    @*         renderTripsPerHourChart('tripsPerLineChart', chartData); *@
-    @* *@
-    @*         const editText = '@Html.Raw(@Localization.GetKey("Edit"))'; *@
-    @*         const saveText = '@Html.Raw(@Localization.GetKey("Save"))'; *@
-    @* *@
-    @*         // Train Edit *@
-    @*         document.querySelectorAll('.edit-btn').forEach(btn => { *@
-    @*             btn.addEventListener('click', () => { *@
-    @*                 const row = btn.closest('tr'); *@
-    @*                 const inputs = { *@
-    @*                     name: row.querySelector('input[name="TrainName"]'), *@
-    @*                     line: row.querySelector('select[name="LineID"]'), *@
-    @*                     start: row.querySelector('input[name="StartWorkTime"]'), *@
-    @*                     end: row.querySelector('input[name="EndWorkTime"]'), *@
-    @*                     statusDisp: row.querySelector('.status-display'), *@
-    @*                     statusSel: row.querySelector('.status-editor') *@
-    @*                 }; *@
-    @* *@
-    @*                 const isSaving = btn.textContent.trim() === saveText; *@
-    @* *@
-    @*                 if (!isSaving) { *@
-    @*                     // Включаем режим редактирования *@
-    @*                     inputs.name.disabled = false; *@
-    @*                     inputs.line.disabled = false; *@
-    @*                     inputs.start.disabled = false; *@
-    @*                     inputs.end.disabled = false; *@
-    @*                     inputs.statusDisp.classList.add('d-none'); *@
-    @*                     inputs.statusSel.classList.remove('d-none'); *@
-    @*                     inputs.statusSel.value = inputs.statusSel.dataset.value; *@
-    @* *@
-    @*                     btn.textContent = saveText; *@
-    @*                     btn.classList.replace('btn-outline-primary', 'btn-primary'); *@
-    @*                 } else { *@
-    @*                     // Сохраняем изменения *@
-    @*                     if (inputs.start.value >= inputs.end.value) { *@
-    @*                         alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))'); *@
-    @*                         return; *@
-    @*                     } *@
-    @* *@
-    @*                     const formData = { *@
-    @*                         TrainID: row.dataset.trainId, *@
-    @*                         TrainName: inputs.name.value, *@
-    @*                         LineID: inputs.line.value, *@
-    @*                         StartWorkTime: inputs.start.value, *@
-    @*                         EndWorkTime: inputs.end.value, *@
-    @*                         IsActive: inputs.statusSel.value === 'true' *@
-    @*                     }; *@
-    @* *@
-    @*                     fetch('/Admin/UpdateTrain', { *@
-    @*                         method: 'POST', *@
-    @*                         headers: { *@
-    @*                             'Content-Type': 'application/json', *@
-    @*                             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
-    @*                         }, *@
-    @*                         body: JSON.stringify(formData) *@
-    @*                     }) *@
-    @*                         .then(r => { *@
-    @*                             if (!r.ok) throw new Error('Update failed'); *@
-    @*                             location.reload(); *@
-    @*                         }) *@
-    @*                         .catch(() => { *@
-    @*                             alert('@Html.Raw(@Localization.GetKey("FailedToSave"))'); *@
-    @*                         }); *@
-    @*                 } *@
-    @*             }); *@
-    @*         }); *@
-    @* *@
-    @*         // Remove Train *@
-    @*         document.querySelectorAll('.delete-btn').forEach(btn => { *@
-    @*             btn.addEventListener('click', () => { *@
-    @*                 const id = btn.closest('tr').dataset.trainId; *@
-    @*                 if (!confirm('@Html.Raw(@Localization.GetKey("RemoveTrain"))')) return; *@
-    @* *@
-    @*                 fetch('/Admin/DeleteTrain', { *@
-    @*                     method: 'POST', *@
-    @*                     headers: { *@
-    @*                         'Content-Type': 'application/json', *@
-    @*                         'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
-    @*                     }, *@
-    @*                     body: JSON.stringify(id) *@
-    @*                 }) *@
-    @*                     .then(r => { *@
-    @*                         if (!r.ok) return r.text().then(t => { *@
-    @*                             throw new Error(t); *@
-    @*                         }); *@
-    @*                         location.reload(); *@
-    @*                     }) *@
-    @*                     .catch(err => alert(err.message || 'Delete error')); *@
-    @*             }); *@
-    @*         }); *@
-    @* *@
-    @*         // Create Train *@
-    @*         document.getElementById('createTrainBtn').addEventListener('click', () => { *@
-    @*             const form = document.getElementById('createTrainForm'); *@
-    @*             if (!form.checkValidity()) { *@
-    @*                 form.reportValidity(); *@
-    @*                 return; *@
-    @*             } *@
-    @* *@
-    @*             const data = Object.fromEntries(new FormData(form).entries()); *@
-    @*             data.IsActive = data.IsActive === 'true'; *@
-    @* *@
-    @*             fetch('/Admin/CreateTrain', { *@
-    @*                 method: 'POST', *@
-    @*                 headers: { *@
-    @*                     'Content-Type': 'application/json', *@
-    @*                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
-    @*                 }, *@
-    @*                 body: JSON.stringify(data) *@
-    @*             }) *@
-    @*                 .then(r => { *@
-    @*                     if (!r.ok) return r.text().then(t => { *@
-    @*                         throw new Error(t); *@
-    @*                     }); *@
-    @*                     location.reload(); *@
-    @*                 }) *@
-    @*                 .catch(err => alert(err.message || 'Create error')); *@
-    @*         }); *@
-    @* *@
-    @*         // Edit Line *@
-    @*         document.querySelectorAll('.edit-line-btn').forEach(btn => { *@
-    @*             btn.addEventListener('click', () => { *@
-    @*                 const row = btn.closest('tr'); *@
-    @*                 const inputs = { *@
-    @*                     start: row.querySelector('input[name="StartWorkTime"]'), *@
-    @*                     end: row.querySelector('input[name="EndWorkTime"]'), *@
-    @*                     color: row.querySelector('input[name="Color"]') *@
-    @*                 }; *@
-    @* *@
-    @*                 const isSaving = btn.textContent.trim() === saveText; *@
-    @* *@
-    @*                 if (!isSaving) { *@
-    @*                     inputs.start.disabled = false; *@
-    @*                     inputs.end.disabled = false; *@
-    @*                     inputs.color.disabled = false; *@
-    @* *@
-    @*                     btn.textContent = saveText; *@
-    @*                     btn.classList.replace('btn-outline-primary', 'btn-primary'); *@
-    @*                 } else { *@
-    @*                     if (inputs.start.value >= inputs.end.value) { *@
-    @*                         alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))'); *@
-    @*                         return; *@
-    @*                     } *@
-    @* *@
-    @*                     const data = { *@
-    @*                         LineID: row.dataset.lineId, *@
-    @*                         StartWorkTime: inputs.start.value, *@
-    @*                         EndWorkTime: inputs.end.value, *@
-    @*                         Color: inputs.color.value *@
-    @*                     }; *@
-    @* *@
-    @*                     fetch('/Admin/UpdateLine', { *@
-    @*                         method: 'POST', *@
-    @*                         headers: { *@
-    @*                             'Content-Type': 'application/json', *@
-    @*                             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value *@
-    @*                         }, *@
-    @*                         body: JSON.stringify(data) *@
-    @*                     }) *@
-    @*                         .then(r => { *@
-    @*                             if (!r.ok) return r.text().then(t => { *@
-    @*                                 throw new Error(t); *@
-    @*                             }); *@
-    @*                             location.reload(); *@
-    @*                         }) *@
-    @*                         .catch(err => { *@
-    @*                             alert(err.message || '@Html.Raw(@Localization.GetKey("FailedToUpdateLine"))'); *@
-    @*                         }); *@
-    @*                 } *@
-    @*             }); *@
-    @*         }); *@
-    @* *@
-    @*         // Sort table *@
-    @*         $('#trainsTable').DataTable({ *@
-    @*             "autoWidth": false, *@
-    @*             "paging": false, *@
-    @*             "searching": false, *@
-    @*             "ordering": true, *@
-    @*             "info": false, *@
-    @*             "lengthChange": false, *@
-    @*             "columnDefs": [ *@
-    @*                 {"orderable": false, "targets": 6}, *@
-    @*             ], *@
-    @*             "language": { *@
-    @*                 "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json" *@
-    @*             } *@
-    @*         }); *@
-    @* *@
-    @*         // Mobile design code *@
-    @*         const offcanvasEl = document.getElementById('adminSidebarOffcanvas'); *@
-    @*         const bsOffcanvas = bootstrap.Offcanvas.getOrCreateInstance(offcanvasEl); *@
-    @*         const burgerCheckbox = document.getElementById('burger-checkbox'); *@
-    @* *@
-    @* *@
-    @*         // Открыть меню по чекбоксу *@
-    @*         burgerCheckbox.addEventListener('change', function () { *@
-    @*             if (this.checked) { *@
-    @*                 bsOffcanvas.show(); *@
-    @*             } else { *@
-    @*                 bsOffcanvas.hide(); *@
-    @*             } *@
-    @*         }); *@
-    @*          *@
-    @*         offcanvasEl.addEventListener('hidden.bs.offcanvas', function () { *@
-    @*             burgerCheckbox.checked = false; *@
-    @*         }); *@
-    @*         offcanvasEl.addEventListener('shown.bs.offcanvas', function () { *@
-    @*             burgerCheckbox.checked = true; *@
-    @*         }); *@
-    @* *@
-    @*         // Закрывать меню при выборе пункта *@
-    @*         offcanvasEl.querySelectorAll('.admin-nav-link, .admin-nav-link-action').forEach(link => { *@
-    @*             link.addEventListener('click', function () { *@
-    @*                 if (window.innerWidth < 768) { *@
-    @*                     bsOffcanvas.hide(); *@
-    @*                 } *@
-    @*             }); *@
-    @*         }); *@
-    @* *@
-    @*         setupRigaClock('riga-time-desktop', true); *@
-    @*         setupRigaClock('riga-time-mobile', true); *@
-    @* *@
-    @*     }); *@
-    @* </script> *@
 }
 

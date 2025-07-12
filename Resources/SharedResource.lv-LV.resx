@@ -75,8 +75,8 @@
     <data name="EndWork" xml:space="preserve">
         <value>Darba beigas</value>
     </data>
-    <data name="Export" xml:space="preserve">
-        <value>Eksports</value>
+    <data name="ExportDisclaimer" xml:space="preserve">
+        <value>Metro grafika eksportēšanas cilne tiek izstrādāta.</value>
     </data>
     <data name="Inactive" xml:space="preserve">
         <value>Neaktīvs</value>
@@ -212,5 +212,8 @@
     </data>
     <data name="RemoveTrain" xml:space="preserve">
         <value>Dzēst vilcienu?</value>
+    </data>
+    <data name="Export" xml:space="preserve">
+        <value>Eksportēt</value>
     </data>
 </root>

@@ -75,8 +75,8 @@
     <data name="EndWork" xml:space="preserve">
         <value>Конец работы</value>
     </data>
-    <data name="Export" xml:space="preserve">
-        <value>Экспорт</value>
+    <data name="ExportDisclaimer" xml:space="preserve">
+        <value>Вкладка для экспорта расписания метрополитена находится в процессе разработке.</value>
     </data>
     <data name="Inactive" xml:space="preserve">
         <value>Неактивен</value>
@@ -212,5 +212,8 @@
     </data>
     <data name="RemoveTrain" xml:space="preserve">
         <value>Удалить поезд?</value>
+    </data>
+    <data name="Export" xml:space="preserve">
+        <value>Экспортировать</value>
     </data>
 </root>

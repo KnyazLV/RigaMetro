@@ -249,11 +249,20 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Экспорт.
+        ///   Looks up a localized string similar to Экспортировать.
         /// </summary>
         internal static string Export {
             get {
                 return ResourceManager.GetString("Export", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Вкладка для экспорта расписания метрополитена находится в процессе разработке..
+        /// </summary>
+        internal static string ExportDisclaimer {
+            get {
+                return ResourceManager.GetString("ExportDisclaimer", resourceCulture);
             }
         }
         

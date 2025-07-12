@@ -1,6 +1,7 @@
-﻿function setupRigaClock(elemId, withDate = false) {
+﻿function setupRigaClock(elemId, withDate = false, locale = 'en-US') {
   const elem = document.getElementById(elemId);
   if (!elem) return;
+
   function update() {
     const now = new Date();
     const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Europe/Riga' };
@@ -12,13 +13,9 @@
     let html = `<p class="riga-time-clock">${hour}${colon}${minute}</p>`;
     if (withDate) {
       const dateOptions = { weekday: 'long', month: 'long', year: 'numeric', day: 'numeric', timeZone: 'Europe/Riga' };
-      const date = new Intl.DateTimeFormat('en-US', dateOptions).format(now);
-      const dateParts = date.split(' ');
-      const dayName = dateParts[0].replace(',', '');
-      const monthName = dateParts[1].replace(',', '');
-      const year = dateParts[3];
-      const dateStr = `${dayName}, ${monthName} ${year}`;
-      html += `<p class="riga-time-date">${dateStr}</p>`;
+      // Используем переданную локаль
+      const date = new Intl.DateTimeFormat(locale, dateOptions).format(now);
+      html += `<p class="riga-time-date">${date}</p>`;
     }
     elem.innerHTML = html;
   }
