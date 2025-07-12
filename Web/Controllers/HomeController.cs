@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using RigaMetro.Infrastructure.Data;
+using RigaMetro.Resources;
 using RigaMetro.Services;
 using RigaMetro.Web.Models;
 using RigaMetro.Web.Models.ViewModels;
@@ -41,6 +44,25 @@ public class HomeController : Controller {
         ViewData["MapboxToken"] = _configuration["MapBox:ApiKey"];
         return View(model);
     }
+    
+    public IActionResult ChangeLanguage(string culture) {
+        Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), new CookieOptions() {
+            Expires = DateTimeOffset.UtcNow.AddYears(1)
+        });
+        return Redirect(Request.Headers["Referer"].ToString());
+    }
+    
+    // [HttpGet]
+    // public IActionResult SetLanguage(string culture, string returnUrl = "/") {
+    //     Response.Cookies.Append(
+    //         CookieRequestCultureProvider.DefaultCookieName,
+    //         CookieRequestCultureProvider.MakeCookieValue(
+    //             new RequestCulture(culture)),
+    //         new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
+    //
+    //     return LocalRedirect(returnUrl);
+    // }
+
 
     public async Task<IActionResult> DebugData() {
         var model = await CreateMapDataViewModel();

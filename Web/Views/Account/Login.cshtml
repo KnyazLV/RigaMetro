@@ -17,7 +17,7 @@
 
             @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0) {
               <div class="login-error-block">
-                <div class="login-error-title">Ошибка входа</div>
+                <div class="login-error-title">@Localization.GetKey("LoginError")</div>
                 @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors)) {
                   <div class="login-error-text">@error.ErrorMessage</div>
                 }
@@ -25,13 +25,13 @@
             }
 
             <div class="form-group mb-3">
-              <label asp-for="Username" class="form-label"></label>
+              <label asp-for="Username" class="form-label">@Localization.GetKey("Username")</label>
               <input asp-for="Username" class="form-control"/>
               <span asp-validation-for="Username" class="field-error"></span>
             </div>
 
             <div class="form-group mb-3 position-relative">
-              <label asp-for="Password" class="form-label"></label>
+              <label asp-for="Password" class="form-label">@Localization.GetKey("Password")</label>
               <input asp-for="Password" class="form-control pe-5" id="passwordInput" autocomplete="current-password"/>
               <span class="password-toggle" id="togglePassword" tabindex="0" role="button" aria-label="Show/Hide password">
                 <img src="~/images/eye-with-line.svg" id="eyeIcon" alt="Show password" width="24" height="24"/>
@@ -49,10 +49,11 @@
                       <path d="M4 14l8 7L24 7"></path>
                     </svg>
                   </span>
-                  <span class="checkbox__textwrapper">@Html.DisplayNameFor(m => m.RememberMe)</span>
+                  @* <span class="checkbox__textwrapper">@Html.DisplayNameFor(m => m.RememberMe)</span> *@
+                  <span class="checkbox__textwrapper">@Localization.GetKey("RememberMe")</span>
                 </label>
               </div>
-              <button type="submit" class="btn btn-animated btn-accent">Log In</button>
+              <button type="submit" class="btn btn-animated btn-accent">@Localization.GetKey("LogIn")</button>
             </div>
           </form>
         </div>

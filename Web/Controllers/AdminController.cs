@@ -2,7 +2,9 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using RigaMetro.Infrastructure.Data;
+using RigaMetro.Resources;
 using RigaMetro.Services;
 using RigaMetro.Web.Models;
 using RigaMetro.Web.Models.ViewModels;
@@ -109,6 +111,43 @@ public class AdminController : Controller {
         return Ok(new { newId });
     }
     
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateLine([FromBody] LineAdminSettingsViewModel model) {
+        if (model == null)
+            return BadRequest("Модель обновления не передана");
+
+        if (model.StartWorkTime >= model.EndWorkTime)
+            return BadRequest("StartWorkTime must be earlier than EndWorkTime");
+
+        var line = await _db.Lines.FindAsync(model.LineID);
+        if (line == null) return NotFound();
+
+        var baseDate = new DateTime(2000, 1, 1);
+        line.StartWorkTime = baseDate.Add(model.StartWorkTime);
+        line.EndWorkTime   = baseDate.Add(model.EndWorkTime);
+        line.Color = model.Color;
+        await _db.SaveChangesAsync();
+
+        var schedules = await _db.LineSchedules
+            .Where(s => s.LineID == line.LineID)
+            .ToListAsync();
+        
+        _db.LineSchedules.RemoveRange(schedules);
+        await _db.SaveChangesAsync();
+
+        var activeTrains = await _db.Trains
+            .Where(t => t.LineID == line.LineID && t.IsActive)
+            .Select(t => t.TrainID)
+            .ToListAsync();
+
+        foreach (var trainId in activeTrains) {
+            await _scheduleService.GenerateDailyScheduleAsync(trainId, DateTime.Today);
+        }
+
+        return Ok();
+    }
+    
     private async Task<AdminDataViewModel> CreateAdminDataAsync() {
         var totalLines = await _db.Lines.CountAsync();
         var totalStations = await _db.Stations.CountAsync();
@@ -183,8 +222,8 @@ public class AdminController : Controller {
             .AsNoTracking()
             .Select(l => new LineAdminSettingsViewModel {
                 LineID = l.LineID,
-                StartWorkTime = l.StartWorkTime,
-                EndWorkTime = l.EndWorkTime,
+                StartWorkTime = l.StartWorkTime.TimeOfDay,
+                EndWorkTime   = l.EndWorkTime.TimeOfDay,
                 Color = l.Color,
                 Name = l.Name
             })

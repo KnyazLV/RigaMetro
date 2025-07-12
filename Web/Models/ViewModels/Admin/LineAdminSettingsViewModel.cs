@@ -3,7 +3,7 @@
 public class LineAdminSettingsViewModel {
     public string LineID { get; set; } = "";
     public string Name { get; set; } = "";
-    public DateTime StartWorkTime { get; set; }
-    public DateTime EndWorkTime { get; set; }
+    public TimeSpan StartWorkTime { get; set; }
+    public TimeSpan EndWorkTime { get; set; }
     public string Color { get; set; } = "";
 }

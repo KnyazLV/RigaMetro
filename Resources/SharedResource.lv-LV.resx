@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Actions" xml:space="preserve">
+        <value>Darbības</value>
+    </data>
+    <data name="Active" xml:space="preserve">
+        <value>Aktīvs</value>
+    </data>
+    <data name="AddTrain" xml:space="preserve">
+        <value>Pievienot vilcienu</value>
+    </data>
+    <data name="AdminPanel" xml:space="preserve">
+        <value>Administratora panelis</value>
+    </data>
+    <data name="Cancel" xml:space="preserve">
+        <value>Atcelt</value>
+    </data>
+    <data name="ClockwiseDirection" xml:space="preserve">
+        <value>Pa pulksteņrādītāja virzienu</value>
+    </data>
+    <data name="Color" xml:space="preserve">
+        <value>Krāsa</value>
+    </data>
+    <data name="Contacts" xml:space="preserve">
+        <value>Kontakti</value>
+    </data>
+    <data name="Copyright" xml:space="preserve">
+        <value>Autortiesības © {0} | Visas tiesības aizsargātas</value>
+    </data>
+    <data name="CounterclockwiseDirection" xml:space="preserve">
+        <value>Pret pulksteņrādītāja virzienu</value>
+    </data>
+    <data name="Create" xml:space="preserve">
+        <value>Izveidot</value>
+    </data>
+    <data name="Dashboard" xml:space="preserve">
+        <value>Informācijas panelis</value>
+    </data>
+    <data name="Delete" xml:space="preserve">
+        <value>Dzēst</value>
+    </data>
+    <data name="DisclaimerNote" xml:space="preserve">
+        <value>Lūdzu, ņemiet vērā</value>
+    </data>
+    <data name="DisclaimerText1" xml:space="preserve">
+        <value>šī vietne nav oficiālā Rīgas metro vietne. Visa informācija šajā vietnē ir izdomāta.</value>
+    </data>
+    <data name="DisclaimerText2" xml:space="preserve">
+        <value>Šis projekts izveidots nekomerciāliem izglītojošiem mērķiem.</value>
+    </data>
+    <data name="Edit" xml:space="preserve">
+        <value>Rediģēt</value>
+    </data>
+    <data name="EndOfWork" xml:space="preserve">
+        <value>Darba beigas</value>
+    </data>
+    <data name="EndWork" xml:space="preserve">
+        <value>Darba beigas</value>
+    </data>
+    <data name="Export" xml:space="preserve">
+        <value>Eksports</value>
+    </data>
+    <data name="Inactive" xml:space="preserve">
+        <value>Neaktīvs</value>
+    </data>
+    <data name="Line" xml:space="preserve">
+        <value>Līnija</value>
+    </data>
+    <data name="LineID" xml:space="preserve">
+        <value>Līnijas ID</value>
+    </data>
+    <data name="Lines" xml:space="preserve">
+        <value>Līnijas</value>
+    </data>
+    <data name="ListOfLines" xml:space="preserve">
+        <value>Līniju saraksts</value>
+    </data>
+    <data name="ListOfTrains" xml:space="preserve">
+        <value>Vilcienu saraksts</value>
+    </data>
+    <data name="LogIn" xml:space="preserve">
+        <value>Ienākt</value>
+    </data>
+    <data name="LoginError" xml:space="preserve">
+        <value>Pieslēgšanās kļūda</value>
+    </data>
+    <data name="Logout" xml:space="preserve">
+        <value>Iziet</value>
+    </data>
+    <data name="MadeBy" xml:space="preserve">
+        <value>Izveidojis Rostislavs Belovs</value>
+    </data>
+    <data name="MapZoomHint" xml:space="preserve">
+        <value>Lai palielinātu karti, izmantojiet Ctrl + peles riteni</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Nosaukums</value>
+    </data>
+    <data name="NewTrain" xml:space="preserve">
+        <value>Jauns vilciens</value>
+    </data>
+    <data name="NoSchedule" xml:space="preserve">
+        <value>Laika grafiks nav pieejams</value>
+    </data>
+    <data name="NoScheduleForStation" xml:space="preserve">
+        <value>Laika grafiks šai stacijai nav pieejams</value>
+    </data>
+    <data name="NumberOfTripsPerHour" xml:space="preserve">
+        <value>Reisu skaits stundā</value>
+    </data>
+    <data name="OpenAdmin" xml:space="preserve">
+        <value>Atvērt admin paneli</value>
+    </data>
+    <data name="OpenMap" xml:space="preserve">
+        <value>Atvērt karti</value>
+    </data>
+    <data name="Password" xml:space="preserve">
+        <value>Parole</value>
+    </data>
+    <data name="RememberMe" xml:space="preserve">
+        <value>Atcerēties mani</value>
+    </data>
+    <data name="RigaMetroAdminPanel" xml:space="preserve">
+        <value>Rigas Metro | Admina Panelis</value>
+    </data>
+    <data name="SelectALine" xml:space="preserve">
+        <value>Izvēlieties līniju</value>
+    </data>
+    <data name="SourceCode" xml:space="preserve">
+        <value>Avota kods</value>
+    </data>
+    <data name="StartOfWork" xml:space="preserve">
+        <value>Darba sākums</value>
+    </data>
+    <data name="StartWork" xml:space="preserve">
+        <value>Darba sākums</value>
+    </data>
+    <data name="StatisticsByLine" xml:space="preserve">
+        <value>Statistika pa līnijām</value>
+    </data>
+    <data name="Status" xml:space="preserve">
+        <value>Statuss</value>
+    </data>
+    <data name="SummaryStatistics" xml:space="preserve">
+        <value>Kopsavilkuma statistika</value>
+    </data>
+    <data name="TestKey" xml:space="preserve">
+        <value>Tas ir test</value>
+    </data>
+    <data name="Towards" xml:space="preserve">
+        <value>Uz</value>
+    </data>
+    <data name="TrainName" xml:space="preserve">
+        <value>Vilciena nosaukums</value>
+    </data>
+    <data name="Trains" xml:space="preserve">
+        <value>Vilcieni</value>
+    </data>
+    <data name="Username" xml:space="preserve">
+        <value>Lietotājvārds</value>
+    </data>
+    <data name="Stations" xml:space="preserve">
+        <value>Stacijas</value>
+    </data>
+    <data name="NumberOfTrain" xml:space="preserve">
+        <value>Vilciena numurs</value>
+    </data>
+    <data name="Save" xml:space="preserve">
+        <value>Saglabāt</value>
+    </data>
+    <data name="TrainsScheduled" xml:space="preserve">
+        <value>Ieplānotie vilcieni</value>
+    </data>
+    <data name="LengthOfNetwork" xml:space="preserve">
+        <value>Ceļu tīkla garums, km</value>
+    </data>
+    <data name="TripsPerDay" xml:space="preserve">
+        <value>Reisi dienā</value>
+    </data>
+    <data name="ActiveTrains" xml:space="preserve">
+        <value>Aktīvie vilcieni</value>
+    </data>
+    <data name="LengthKm" xml:space="preserve">
+        <value>Garums, km</value>
+    </data>
+    <data name="AlertStartTime" xml:space="preserve">
+        <value>Sākuma laiks ir jābūt agrākam nekā beigu laiks.</value>
+    </data>
+    <data name="FailedToSave" xml:space="preserve">
+        <value>Neizdevās saglabāt</value>
+    </data>
+    <data name="FailedToUpdateLine" xml:space="preserve">
+        <value>Neizdevās atjaunināt līniju</value>
+    </data>
+    <data name="RemoveTrain" xml:space="preserve">
+        <value>Dzēst vilcienu?</value>
+    </data>
+</root>

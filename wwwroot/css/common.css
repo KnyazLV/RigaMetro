@@ -1,5 +1,4 @@
-﻿/*@import url('https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,600;0,700;1,400&display=swap');*/
-@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;600;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;600;700&display=swap');
 
 :root {
     --color-bg-dark: #191A1A;
@@ -17,7 +16,7 @@ body {
 }
 
 body, input, button, textarea, select {
-    font-family: "Kanit", sans-serif;
+    font-family: "Kanit", "Montserrat", sans-serif;
 }
 
 h1, h2, h3, h4, h5, h6, p, ul, form, img {

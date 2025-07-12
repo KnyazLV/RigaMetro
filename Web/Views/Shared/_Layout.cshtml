@@ -24,22 +24,24 @@
   <div class="admin-top-bar d-flex justify-content-between align-items-center">
     <div class="container-fluid d-flex justify-content-between align-items-center px-3">
       <div class="admin-bar-title d-flex align-items-center gap-2 py-1">
-        <span>Riga Metro | Admin Panel</span>
+        @* <span>@Localizer["RigaMetroAdminPanel"]</span> *@
+        <span>@Localization.GetKey("RigaMetroAdminPanel")</span>
       </div>
       <div class="admin-bar-actions d-flex align-items-center gap-2">
         <a class="btn btn-animated btn-light-animated admin-bar-btn"
            asp-controller="Admin" asp-action="Index">
-          Open Admin
+          @Localization.GetKey("OpenAdmin")
         </a>
         <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
-          <button type="submit" style="padding: 4px; border-width: 2px;" class="btn btn-outline-light d-flex align-items-center" title="Logout">
-            <img src="~/images/logout.svg" alt="Logout" style="width:20px;height:20px;display:block;" />
+          <button type="submit" style="padding: 4px; border-width: 2px;" class="btn btn-outline-light d-flex align-items-center" title="@Localization.GetKey("Logout")">
+            <img src="~/images/logout.svg" alt="@Localization.GetKey("Logout")" style="width:20px;height:20px;display:block;" />
           </button>
         </form>
       </div>
     </div>
   </div>
 }
+
 
 <header>
   <nav class="navbar navbar-expand-lg">
@@ -50,11 +52,20 @@
       <div class="navbar-right-block d-flex flex-column align-items-end">
         <div id="riga-time" class="riga-time"></div>
         <div class="lang-switch mt-1">
-          <a href="#" class="lang-link active">LV</a>
+          <a asp-action="ChangeLanguage" asp-controller="Home"
+             asp-route-culture="lv-LV"
+             asp-route-returnUrl="@Context.Request.Path"
+             class="lang-link @(CultureInfo.CurrentUICulture.Name=="lv-LV" ? "active" : "")">LV</a>
           <span class="lang-divider">|</span>
-          <a href="#" class="lang-link">EN</a>
+          <a asp-action="ChangeLanguage" asp-controller="Home"
+             asp-route-culture="en-US"
+             asp-route-returnUrl="@Context.Request.Path"
+             class="lang-link @(CultureInfo.CurrentUICulture.Name=="en-US" ? "active" : "")">EN</a>
           <span class="lang-divider">|</span>
-          <a href="#" class="lang-link">RU</a>
+          <a asp-action="ChangeLanguage" asp-controller="Home"
+             asp-route-culture="ru-RU"
+             asp-route-returnUrl="@Context.Request.Path"
+             class="lang-link @(CultureInfo.CurrentUICulture.Name=="ru-RU" ? "active" : "")">RU</a>
         </div>
       </div>
     </div>
@@ -65,19 +76,20 @@
 </main>
 <footer class="site-footer d-flex flex-column flex-md-row justify-content-between align-items-center p-3 gap-3 gap-md-0 text-white" style="font-weight: 200; background-color: var(--color-bg-darker)">
   <div class="text-center text-md-start">
-    <p>Made by <span style="font-weight: bold">Rostislavs Belovs</span></p>
-    <p>Copyright&copy; @DateTime.Now.Year | All rights reserved</p>
+    <p>@Localization.GetKey("MadeBy")</p>
+    <p>@Localization.GetKey("Copyright", DateTime.Now.Year)</p>
   </div>
-  <a class="footer-link my-2 my-md-0" href="https://github.com/KnyazLV/RigaMetro" style="text-decoration: underline" target="_blank">Source Code</a>
+  <a class="footer-link my-2 my-md-0" href="https://github.com/KnyazLV/RigaMetro" style="text-decoration: underline" target="_blank">@Localization.GetKey("SourceCode")</a>
   <div class="text-center text-md-end">
-    <h4 class="text-uppercase mb-2 mb-md-0" style="color: var(--color-accent); font-weight: bold; font-size: 20px">Contacts</h4>
+    <h4 class="text-uppercase mb-2 mb-md-0" style="color: var(--color-accent); font-weight: bold; font-size: 20px">@Localization.GetKey("Contacts")</h4>
     <div class="d-flex flex-column flex-md-row gap-2 gap-md-3 justify-content-center justify-content-md-end align-items-center" style="font-weight: normal">
       <a class="footer-link" href="https://github.com/KnyazLV" target="_blank">GitHub</a>
       <a class="footer-link" href="https://www.linkedin.com/in/rostislavs-belovs/" target="_blank">LinkedIn</a>
-      <a class="footer-link" href="mailto:r.belovs@inbox.lv">r.belovs@inbox.lv</a>
+      <a class="footer-link" href="mailto:r.belovs@inbox.lv">r.belovs@gmail.com</a>
     </div>
   </div>
 </footer>
+
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
@@ -85,8 +97,6 @@
 @RenderSection("Scripts", required: false)
 <script>
   setupRigaClock('riga-time', false);
-  // updateRigaTime();
-  // setInterval(updateRigaTime, 1000);
 </script>
 
 </body>

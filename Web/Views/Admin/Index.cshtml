@@ -1,7 +1,6 @@
 ﻿@model RigaMetro.Web.Models.ViewModels.Admin.AdminDataViewModel
 @{
     Layout = "_AdminLayout";
-    ViewBag.Title = "Admin";
 }
 
 <aside class="admin-sidebar d-flex flex-column justify-content-between align-items-center">
@@ -10,48 +9,56 @@
             <img src="~/images/RigaMetroLogo.svg" style="height: 80px;" alt="Admin"/>
             <div class="d-flex flex-column z-1">
                 <div class="lang-switch mt-1">
-                    <a href="#" class="lang-link active">LV</a>
+                    <a asp-action="ChangeLanguage" asp-controller="Home"
+                       asp-route-culture="lv-LV"
+                       asp-route-returnUrl="@Context.Request.Path"
+                       class="lang-link @(CultureInfo.CurrentUICulture.Name=="lv-LV" ? "active" : "")">LV</a>
                     <span class="lang-divider">|</span>
-                    <a href="#" class="lang-link">EN</a>
+                    <a asp-action="ChangeLanguage" asp-controller="Home"
+                       asp-route-culture="en-US"
+                       asp-route-returnUrl="@Context.Request.Path"
+                       class="lang-link @(CultureInfo.CurrentUICulture.Name=="en-US" ? "active" : "")">EN</a>
                     <span class="lang-divider">|</span>
-                    <a href="#" class="lang-link">RU</a>
+                    <a asp-action="ChangeLanguage" asp-controller="Home"
+                       asp-route-culture="ru-RU"
+                       asp-route-returnUrl="@Context.Request.Path"
+                       class="lang-link @(CultureInfo.CurrentUICulture.Name=="ru-RU" ? "active" : "")">RU</a>
                 </div>
             </div>
-            <div id="riga-time" class="riga-time text-center">
-            </div>
+            <div id="riga-time" class="riga-time text-center"></div>
         </div>
         <nav class="admin-nav flex-grow-1 mt-4">
             <ul class="nav flex-column gap-2">
                 <li>
                     <button class="admin-nav-link active" data-tab="dashboard">
-                        <span class="admin-nav-link-text">Dashboard</span>
+                        <span class="admin-nav-link-text">@Localization.GetKey("Dashboard")</span>
                     </button>
                 </li>
                 <li>
                     <button class="admin-nav-link" data-tab="trains">
-                        <span class="admin-nav-link-text">Trains</span>
+                        <span class="admin-nav-link-text">@Localization.GetKey("Trains")</span>
                     </button>
                 </li>
                 <li>
                     <button class="admin-nav-link" data-tab="lines">
-                        <span class="admin-nav-link-text">Lines</span>
+                        <span class="admin-nav-link-text">@Localization.GetKey("Lines")</span>
                     </button>
                 </li>
                 <li>
                     <button class="admin-nav-link" data-tab="export">
-                        <span class="admin-nav-link-text">Export</span>
+                        <span class="admin-nav-link-text">@Localization.GetKey("Export")</span>
                     </button>
                 </li>
                 <li>
                     <a class="admin-nav-link admin-nav-link-action" href="@Url.Action("Index", "Home")">
-                        <span class="admin-nav-link-text">Open Map</span>
+                        <span class="admin-nav-link-text">@Localization.GetKey("OpenMap")</span>
                     </a>
                 </li>
                 <li>
                     <form asp-controller="Account" asp-action="Logout" method="post" class="w-100">
                         <button type="submit" class="admin-nav-link admin-nav-link-action w-100"
                                 formaction="@Url.Action("Logout", "Account")" formmethod="post">
-                            <span class="admin-nav-link-text">Logout</span>
+                            <span class="admin-nav-link-text">@Localization.GetKey("Logout")</span>
                         </button>
                     </form>
                 </li>
@@ -59,23 +66,23 @@
         </nav>
     </div>
     <footer style="font-weight: 200;" class="admin-sidebar-footer py-3 px-3">
-        <p>Made by Rostislavs Belovs</p>
-        <p>Copyright &copy; @DateTime.Now.Year | All rights reserved</p>
+        <p>@Localization.GetKey("MadeBy")</p>
+        <p>@Localization.GetKey("Copyright", @DateTime.Now.Year)</p>
     </footer>
 </aside>
 <section class="admin-main-content">
     <div id="admin-tab-dashboard" class="admin-tab-content">
-        <h2 class="mb-3 text-uppercase" style="font-weight:700;">Summary statistics</h2>
+        <h2 class="mb-3 text-uppercase" style="font-weight:700;">@Localization.GetKey("SummaryStatistics")</h2>
         <div class="table-responsive">
             <table class="table table-dark table-sm text-center align-middle mb-4">
                 <thead>
                 <tr>
-                    <th>Lines</th>
-                    <th>Stations</th>
-                    <th>Trains</th>
-                    <th>Active trains</th>
-                    <th>Length of road network, km</th>
-                    <th>Trips per day</th>
+                    <th>@Localization.GetKey("Lines")</th>
+                    <th>@Localization.GetKey("Stations")</th>
+                    <th>@Localization.GetKey("Trains")</th>
+                    <th>@Localization.GetKey("ActiveTrains")</th>
+                    <th>@Localization.GetKey("LengthOfNetwork")</th>
+                    <th>@Localization.GetKey("TripsPerDay")</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -91,16 +98,16 @@
             </table>
         </div>
 
-        <h3 class="mb-3 text-uppercase" style="font-weight:700;">Statistics by line</h3>
+        <h3 class="mb-3 text-uppercase" style="font-weight:700;">@Localization.GetKey("StatisticsByLine")</h3>
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-sm text-center align-middle">
                 <thead class="table-dark">
                 <tr>
-                    <th>Line</th>
-                    <th>Stations</th>
-                    <th>Length, km</th>
-                    <th>Trips per day</th>
-                    <th>Trains scheduled</th>
+                    <th>@Localization.GetKey("Line")</th>
+                    <th>@Localization.GetKey("Stations")</th>
+                    <th>@Localization.GetKey("LengthKm")</th>
+                    <th>@Localization.GetKey("TripsPerDay")</th>
+                    <th>@Localization.GetKey("TrainsScheduled")</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -118,67 +125,67 @@
                 </tbody>
             </table>
         </div>
-        <h3 class="mt-3 mb-3 text-uppercase" style="font-weight:700;">Number of trips per hour</h3>
+        <h3 class="mt-3 mb-3 text-uppercase" style="font-weight:700;">@Localization.GetKey("NumberOfTripsPerHour")</h3>
         <div class="chart-container mb-4" style="max-width:100%;height:500px;position:relative;">
             <canvas id="tripsPerLineChart"></canvas>
         </div>
     </div>
     <div id="admin-tab-trains" class="admin-tab-content d-none">
-        <h2 class="mb-3 text-uppercase" style="font-weight:700;">List of trains</h2>
+        <h2 class="mb-3 text-uppercase" style="font-weight:700;">@Localization.GetKey("ListOfTrains")</h2>
         <div class="table-responsive">
-            <table class="table table-striped table-bordered table-sm text-center align-middle">
+            <table id="trainsTable" class="table table-striped table-bordered table-sm text-center align-middle">
                 <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Number of train</th>
-                    <th>Line</th>
-                    <th>Start of work</th>
-                    <th>End of work</th>
-                    <th>Status</th>
-                    <th>Actions</th>
+                    <th>@Localization.GetKey("NumberOfTrain")</th>
+                    <th>@Localization.GetKey("Line")</th>
+                    <th>@Localization.GetKey("StartOfWork")</th>
+                    <th>@Localization.GetKey("EndOfWork")</th>
+                    <th>@Localization.GetKey("Status")</th>
+                    <th>@Localization.GetKey("Actions")</th>
                 </tr>
                 </thead>
                 <tbody>
                 @foreach (var train in Model.Trains) {
                     <tr data-train-id="@train.TrainID">
                         <td>@train.TrainID</td>
-                        <td><input type="text" name="TrainName" class="form-control form-control-sm"
-                                   value="@train.TrainName" disabled/></td>
-                        <td>
+                        <td data-order="@train.TrainName">
+                            <input type="text" name="TrainName" class="form-control form-control-sm"
+                                   value="@train.TrainName" disabled/>
+                        </td>
+                        <td data-order="@(Model.Lines.FirstOrDefault(l => l.LineID == train.LineID)?.Name ?? "")">
                             @Html.DropDownList(
                                 "LineID",
                                 new SelectList(Model.Lines, "LineID", "Name", train.LineID),
                                 new { @class = "form-select form-select-sm", disabled = "disabled" }
                             )
                         </td>
-                        <td>
+                        <td data-order="@(new DateTime(train.StartWorkTime.Ticks).ToString("HH:mm"))">
                             <input type="time" name="StartWorkTime"
                                    class="form-control form-control-sm"
                                    value="@(new DateTime(train.StartWorkTime.Ticks).ToString("HH:mm"))"
                                    disabled/>
                         </td>
-                        <td>
+                        <td data-order="@(new DateTime(train.EndWorkTime.Ticks).ToString("HH:mm"))">
                             <input type="time" name="EndWorkTime"
                                    class="form-control form-control-sm"
                                    value="@(new DateTime(train.EndWorkTime.Ticks).ToString("HH:mm"))"
                                    disabled/>
                         </td>
-
-                        <td>
-                            <span class="badge @(train.IsActive ? "bg-success" : "bg-secondary") status-display">
-                                @(train.IsActive ? "Active" : "Inactive")
-                            </span>
+                        <td data-order="@(train.IsActive ? "Active" : "Inactive")">
+            <span class="badge @(train.IsActive ? "bg-success" : "bg-secondary") status-display">
+                @(train.IsActive ? "Active" : "Inactive")
+            </span>
                             <select name="IsActive"
                                     class="form-select form-select-sm status-editor d-none"
                                     data-value="@train.IsActive.ToString().ToLower()">
-                                <option value="true">Active</option>
-                                <option value="false">Inactive</option>
+                                <option value="true">@Localization.GetKey("Active")</option>
+                                <option value="false">@Localization.GetKey("Inactive")</option>
                             </select>
                         </td>
-
                         <td>
-                            <button type="button" class="btn btn-sm btn-outline-primary edit-btn">Edit</button>
-                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn">Delete</button>
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-btn">@Localization.GetKey("Edit")</button>
+                            <button type="button" class="btn btn-sm btn-outline-danger delete-btn">@Localization.GetKey("Delete")</button>
                         </td>
                     </tr>
                 }
@@ -186,7 +193,7 @@
             </table>
         </div>
         <button type="button" class="btn btn-success mt-3" data-bs-toggle="modal" data-bs-target="#createTrainModal">
-            Add Train
+            @Localization.GetKey("AddTrain")
         </button>
 
         <!-- Train creation window -->
@@ -195,171 +202,296 @@
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="createTrainLabel">New Train</h5>
+                        <h5 class="modal-title" id="createTrainLabel">@Localization.GetKey("NewTrain")</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
                     <div class="modal-body">
                         <form id="createTrainForm">
                             <div class="mb-2">
-                                <label class="form-label">Train name</label>
+                                <label class="form-label">@Localization.GetKey("TrainName")</label>
                                 <input type="text" name="TrainName" class="form-control" required/>
                             </div>
                             <div class="mb-2">
-                                <label class="form-label">Line</label>
+                                <label class="form-label">@Localization.GetKey("Line")</label>
                                 @Html.DropDownList("LineID", new SelectList(Model.Lines, "LineID", "Name"), "Select a line", new { @class = "form-select", required = "required" })
                             </div>
                             <div class="mb-2">
-                                <label class="form-label">Start of work</label>
+                                <label class="form-label">@Localization.GetKey("StartOfWork")</label>
                                 <input type="time" name="StartWorkTime" class="form-control" required/>
                             </div>
                             <div class="mb-2">
-                                <label class="form-label">End of work</label>
+                                <label class="form-label">@Localization.GetKey("EndOfWork")</label>
                                 <input type="time" name="EndWorkTime" class="form-control" required/>
                             </div>
                             <div class="mb-2">
-                                <label class="form-label">Статус</label>
+                                <label class="form-label">@Localization.GetKey("Status")</label>
                                 <select name="IsActive" class="form-select">
-                                    <option value="true">Active</option>
-                                    <option value="false">Inactive</option>
+                                    <option value="true">@Localization.GetKey("Active")</option>
+                                    <option value="false">@Localization.GetKey("Inactive")</option>
                                 </select>
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" id="createTrainBtn" class="btn btn-primary">Create</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">@Localization.GetKey("Cancel")</button>
+                        <button type="button" id="createTrainBtn" class="btn btn-primary">@Localization.GetKey("Create")</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <div id="admin-tab-lines" class="admin-tab-content d-none">Lines</div>
-    <div id="admin-tab-export" class="admin-tab-content d-none">Export</div>
+    <div id="admin-tab-lines" class="admin-tab-content d-none">
+        <h2 class="mb-3 text-uppercase" style="font-weight:700;">@Localization.GetKey("ListOfLines")</h2>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-sm text-center align-middle">
+                <thead class="table-dark">
+                <tr>
+                    <th>@Localization.GetKey("LineID")</th>
+                    <th>@Localization.GetKey("Name")</th>
+                    <th>@Localization.GetKey("StartWork")</th>
+                    <th>@Localization.GetKey("EndWork")</th>
+                    <th>@Localization.GetKey("Color")</th>
+                    <th>@Localization.GetKey("Actions")</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var line in Model.Lines) {
+                    <tr data-line-id="@line.LineID">
+                        <td>@line.LineID</td>
+                        <td>@line.Name</td>
+                        <td>
+                            <input type="time" name="StartWorkTime"
+                                   class="form-control form-control-sm"
+                                   value="@(new DateTime(line.StartWorkTime.Ticks).ToString("HH:mm"))"
+                                   disabled/>
+                        </td>
+                        <td>
+                            <input type="time" name="EndWorkTime"
+                                   class="form-control form-control-sm"
+                                   value="@(new DateTime(line.EndWorkTime.Ticks).ToString("HH:mm"))"
+                                   disabled/>
+                        </td>
+                        <td>
+                            <input type="color" name="Color"
+                                   class="form-control form-control-sm form-control-color"
+                                   value="@line.Color"
+                                   disabled/>
+                        </td>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-outline-primary edit-line-btn">@Localization.GetKey("Edit")</button>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div id="admin-tab-export" class="admin-tab-content d-none">@Localization.GetKey("Export")</div>
 </section>
 
 
 @section Scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script type="module">
-    import { renderTripsPerHourChart } from '/js/trips-per-hour-chart.js';
+        import {renderTripsPerHourChart} from '/js/trips-per-hour-chart.js';
 
-    document.addEventListener('DOMContentLoaded', function () {
-        // Navigation
-        const navLinks = document.querySelectorAll('.admin-nav-link');
-        const tabContents = document.querySelectorAll('.admin-tab-content');
-        navLinks.forEach(link => {
-            link.addEventListener('click', function () {
-                navLinks.forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                tabContents.forEach(tc => tc.classList.add('d-none'));
-                document.getElementById('admin-tab-' + this.getAttribute('data-tab')).classList.remove('d-none');
+        document.addEventListener('DOMContentLoaded', function () {
+            const navLinks = document.querySelectorAll('.admin-nav-link');
+            const tabContents = document.querySelectorAll('.admin-tab-content');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function () {
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                    tabContents.forEach(tc => tc.classList.add('d-none'));
+                    document.getElementById('admin-tab-' + this.getAttribute('data-tab')).classList.remove('d-none');
+                });
             });
-        });
 
-        // Chart
-        const chartData = @Html.Raw(Model.AdminStatistics.TripsPerLineHourlyJson);
-        renderTripsPerHourChart('tripsPerLineChart', chartData);
+            const chartData = @Html.Raw(Model.AdminStatistics.TripsPerLineHourlyJson);
+            renderTripsPerHourChart('tripsPerLineChart', chartData);
 
-        // Train Edit
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const row = btn.closest('tr');
-                const inputs = {
-                    name: row.querySelector('input[name="TrainName"]'),
-                    line: row.querySelector('select[name="LineID"]'),
-                    start: row.querySelector('input[name="StartWorkTime"]'),
-                    end: row.querySelector('input[name="EndWorkTime"]'),
-                    statusDisp: row.querySelector('.status-display'),
-                    statusSel: row.querySelector('.status-editor')
-                };
-                const isSaving = btn.textContent === 'Save';
+            const editText = '@Html.Raw(@Localization.GetKey("Edit"))';
+            const saveText = '@Html.Raw(@Localization.GetKey("Save"))';
 
-                if (!isSaving) {
-                    inputs.name.disabled = false;
-                    inputs.line.disabled = false;
-                    inputs.start.disabled = false;
-                    inputs.end.disabled = false;
-                    inputs.statusDisp.classList.add('d-none');
-                    inputs.statusSel.classList.remove('d-none');
-                    inputs.statusSel.value = inputs.statusSel.dataset.value;
-                    btn.textContent = 'Save';
-                    btn.classList.replace('btn-outline-primary', 'btn-primary');
-                } else {
-                    if (inputs.start.value >= inputs.end.value) {
-                        alert('The start time must be earlier than the end time.');
-                        return;
-                    }
-                    const formData = {
-                        TrainID: row.dataset.trainId,
-                        TrainName: inputs.name.value,
-                        LineID: inputs.line.value,
-                        StartWorkTime: inputs.start.value,
-                        EndWorkTime: inputs.end.value,
-                        IsActive: inputs.statusSel.value === 'true'
+            // Train Edit
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const row = btn.closest('tr');
+                    const inputs = {
+                        name: row.querySelector('input[name="TrainName"]'),
+                        line: row.querySelector('select[name="LineID"]'),
+                        start: row.querySelector('input[name="StartWorkTime"]'),
+                        end: row.querySelector('input[name="EndWorkTime"]'),
+                        statusDisp: row.querySelector('.status-display'),
+                        statusSel: row.querySelector('.status-editor')
                     };
-                    fetch('/Admin/UpdateTrain', {
+
+                    const isSaving = btn.textContent.trim() === saveText;
+
+                    if (!isSaving) {
+                        // Включаем режим редактирования
+                        inputs.name.disabled = false;
+                        inputs.line.disabled = false;
+                        inputs.start.disabled = false;
+                        inputs.end.disabled = false;
+                        inputs.statusDisp.classList.add('d-none');
+                        inputs.statusSel.classList.remove('d-none');
+                        inputs.statusSel.value = inputs.statusSel.dataset.value;
+
+                        btn.textContent = saveText;
+                        btn.classList.replace('btn-outline-primary', 'btn-primary');
+                    } else {
+                        // Сохраняем изменения
+                        if (inputs.start.value >= inputs.end.value) {
+                            alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))');
+                            return;
+                        }
+
+                        const formData = {
+                            TrainID: row.dataset.trainId,
+                            TrainName: inputs.name.value,
+                            LineID: inputs.line.value,
+                            StartWorkTime: inputs.start.value,
+                            EndWorkTime: inputs.end.value,
+                            IsActive: inputs.statusSel.value === 'true'
+                        };
+
+                        fetch('/Admin/UpdateTrain', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                            },
+                            body: JSON.stringify(formData)
+                        })
+                            .then(r => {
+                                if (!r.ok) throw new Error('Update failed');
+                                location.reload();
+                            })
+                            .catch(() => {
+                                alert('@Html.Raw(@Localization.GetKey("FailedToSave"))');
+                            });
+                    }
+                });
+            });
+
+            // Remove Train
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.closest('tr').dataset.trainId;
+                    if (!confirm('@Html.Raw(@Localization.GetKey("RemoveTrain"))')) return;
+
+                    fetch('/Admin/DeleteTrain', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                             'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
                         },
-                        body: JSON.stringify(formData)
+                        body: JSON.stringify(id)
                     })
-                    .then(r => {
-                        if (!r.ok) throw '';
-                        location.reload();
-                    })
-                    .catch(() => alert('Failed to save'));
-                }
+                        .then(r => {
+                            if (!r.ok) return r.text().then(t => { throw new Error(t); });
+                            location.reload();
+                        })
+                        .catch(err => alert(err.message || 'Delete error'));
+                });
             });
-        });
 
-        // Remove Train
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const id = btn.closest('tr').dataset.trainId;
-                if (!confirm('Удалить поезд?')) return;
-                fetch('/Admin/DeleteTrain', {
+            // Create Train
+            document.getElementById('createTrainBtn').addEventListener('click', () => {
+                const form = document.getElementById('createTrainForm');
+                if (!form.checkValidity()) {
+                    form.reportValidity();
+                    return;
+                }
+
+                const data = Object.fromEntries(new FormData(form).entries());
+                data.IsActive = data.IsActive === 'true';
+
+                fetch('/Admin/CreateTrain', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
                     },
-                    body: JSON.stringify(id)
+                    body: JSON.stringify(data)
                 })
-                .then(r => {
-                    if (!r.ok) return r.text().then(t => { throw t; });
-                    location.reload();
-                })
-                .catch(err => alert(err || 'Delete error'));
+                    .then(r => {
+                        if (!r.ok) return r.text().then(t => { throw new Error(t); });
+                        location.reload();
+                    })
+                    .catch(err => alert(err.message || 'Create error'));
+            });
+
+            // Edit Line
+            document.querySelectorAll('.edit-line-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const row = btn.closest('tr');
+                    const inputs = {
+                        start: row.querySelector('input[name="StartWorkTime"]'),
+                        end: row.querySelector('input[name="EndWorkTime"]'),
+                        color: row.querySelector('input[name="Color"]')
+                    };
+
+                    const isSaving = btn.textContent.trim() === saveText;
+
+                    if (!isSaving) {
+                        inputs.start.disabled = false;
+                        inputs.end.disabled = false;
+                        inputs.color.disabled = false;
+
+                        btn.textContent = saveText;
+                        btn.classList.replace('btn-outline-primary', 'btn-primary');
+                    } else {
+                        if (inputs.start.value >= inputs.end.value) {
+                            alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))');
+                            return;
+                        }
+
+                        const data = {
+                            LineID: row.dataset.lineId,
+                            StartWorkTime: inputs.start.value,
+                            EndWorkTime: inputs.end.value,
+                            Color: inputs.color.value
+                        };
+
+                        fetch('/Admin/UpdateLine', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                            },
+                            body: JSON.stringify(data)
+                        })
+                            .then(r => {
+                                if (!r.ok) return r.text().then(t => { throw new Error(t); });
+                                location.reload();
+                            })
+                            .catch(err => {
+                                alert(err.message || '@Html.Raw(@Localization.GetKey("FailedToUpdateLine"))');
+                            });
+                    }
+                });
+            });
+
+            setupRigaClock('riga-time', true);
+
+            $('#trainsTable').DataTable({
+                "autoWidth": false,
+                "paging": false,
+                "searching": false,
+                "ordering": true,
+                "info": false,
+                "lengthChange": false,
+                "columnDefs": [
+                    { "orderable": false, "targets": 6 },
+                ],
+                "language": {
+                    "url": "https://cdn.datatables.net/plug-ins/1.13.4/i18n/ru.json"
+                }
             });
         });
-
-        // Create Train
-        document.getElementById('createTrainBtn').addEventListener('click', () => {
-            const form = document.getElementById('createTrainForm');
-            if (!form.checkValidity()) { form.reportValidity(); return; }
-            const data = Object.fromEntries(new FormData(form).entries());
-            data.IsActive = data.IsActive === 'true';
-
-            fetch('/Admin/CreateTrain', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-                },
-                body: JSON.stringify(data)
-            })
-            .then(r => {
-                if (!r.ok) return r.text().then(t => { throw t; });
-                location.reload();
-            })
-            .catch(err => alert(err || 'Create error'));
-        });
-
-        // Clock
-        setupRigaClock('riga-time', true);
-    });
-</script>
+    </script>
 }
 

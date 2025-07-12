@@ -8,7 +8,7 @@
 <div style="position:relative;">
     <div id="map" style="width:100%; height:800px;"></div>
     <div id="map-hint" class="map-hint">
-        Для увеличения карты используйте Ctrl + колесо мыши
+        @Localization.GetKey("MapZoomHint")
     </div>
 </div>
 
@@ -18,10 +18,10 @@
         <h3 class="disclaimer-title mb-0">Rīgas metro</h3>
     </div>
     <p class="mb-2">
-        <span class="disclaimer-accent">Please note</span>: this website is not the official website of the Riga Metro. All information on this website is fictional.
+        <span class="disclaimer-accent">@Localization.GetKey("DisclaimerNote")</span>: @Localization.GetKey("DisclaimerText1")
     </p>
     <p class="mb-0">
-        This project was created for non-commercial educational purposes.
+        @Localization.GetKey("DisclaimerText2")
     </p>
 </div>
 
@@ -164,11 +164,11 @@
         <div class="line-schedule" style="border-left:4px solid ${info.color};padding-left:10px;margin-bottom:20px">
             <h5 style="color:${info.color}">${info.name}</h5>
             <div class="direction-schedule">
-                <h6>В сторону ${info.clockwiseTerminal}</h6>
+                <h6>@Localization.GetKey("Towards") ${info.clockwiseTerminal}</h6>
                 ${generateHourlyScheduleTable(schedule.Clockwise)}
             </div>
             <div class="direction-schedule">
-                <h6>В сторону ${info.counterclockwiseTerminal}</h6>
+                <h6>@Localization.GetKey("Towards") ${info.counterclockwiseTerminal}</h6>
                 ${generateHourlyScheduleTable(schedule.Counterclockwise)}
             </div>
         </div>`;

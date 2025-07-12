@@ -80,15 +80,34 @@ public class ScheduleService : IScheduleService {
             .FirstAsync(l => l.LineID == lineId);
     }
 
+    // private (DateTime start, DateTime end) CalculateWorkWindow(Train train, Line line, DateTime workDate) {
+    //     var date = workDate.Date;
+    //     var lineStart = line.StartWorkTime.TimeOfDay;
+    //     var lineEnd = line.EndWorkTime.TimeOfDay;
+    //     var trainStart = train.StartWorkTime;
+    //     var trainEnd = train.EndWorkTime;
+    //
+    //     var startOffset = lineStart > trainStart ? lineStart : trainStart;
+    //     var endOffset = lineEnd < trainEnd ? lineEnd : trainEnd;
+    //     return (date + startOffset, date + endOffset);
+    // }
+    
     private (DateTime start, DateTime end) CalculateWorkWindow(Train train, Line line, DateTime workDate) {
         var date = workDate.Date;
         var lineStart = line.StartWorkTime.TimeOfDay;
         var lineEnd = line.EndWorkTime.TimeOfDay;
         var trainStart = train.StartWorkTime;
         var trainEnd = train.EndWorkTime;
-
+    
+        // Обработка случая когда время переходит через полночь
         var startOffset = lineStart > trainStart ? lineStart : trainStart;
         var endOffset = lineEnd < trainEnd ? lineEnd : trainEnd;
+    
+        // Если конечное время меньше начального, значит работа через полночь
+        if (endOffset < startOffset) {
+            endOffset = endOffset.Add(TimeSpan.FromDays(1));
+        }
+    
         return (date + startOffset, date + endOffset);
     }
 
