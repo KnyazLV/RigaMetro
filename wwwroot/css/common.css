@@ -1,4 +1,5 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=Kanit:wght@100;200;300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Overpass:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
     --color-bg-dark: #191A1A;
@@ -6,6 +7,25 @@
     --color-accent: #9D2235;
     --color-text-light: #FFFFFF;
 }
+
+.font-kanit,
+.font-kanit body,
+.font-kanit input,
+.font-kanit button,
+.font-kanit textarea,
+.font-kanit select {
+    font-family: 'Kanit', Arial, sans-serif;
+}
+
+.font-cyrillic,
+.font-cyrillic body,
+.font-cyrillic input,
+.font-cyrillic button,
+.font-cyrillic textarea,
+.font-cyrillic select {
+    font-family: 'Overpass', Arial, sans-serif;
+}
+
 
 body {
     background: var(--color-bg-dark);
@@ -15,9 +35,9 @@ body {
     color: #fff;
 }
 
-body, input, button, textarea, select {
-    font-family: "Kanit", "Montserrat", sans-serif;
-}
+/*body, input, button, textarea, select {*/
+/*    font-family: "Kanit", sans-serif;*/
+/*}*/
 
 h1, h2, h3, h4, h5, h6, p, ul, form, img {
     padding: 0;

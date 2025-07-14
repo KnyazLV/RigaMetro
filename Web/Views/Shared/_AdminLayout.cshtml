@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Controllers
 @{
   Layout = null;
+  var isRussian = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
 }
 <!DOCTYPE html>
 <html>
@@ -14,7 +15,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-timepicker/0.5.2/css/bootstrap-timepicker.min.css" />
   <link rel="stylesheet" href="~/css/admin.css" />
 </head>
-<body>
+<body class="@(isRussian ? "font-cyrillic" : "font-kanit")">
 <main class="admin-panel-main d-flex" role="main">
   @RenderBody()
 </main>

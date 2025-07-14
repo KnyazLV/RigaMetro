@@ -214,6 +214,6 @@
         <value>Удалить поезд?</value>
     </data>
     <data name="Export" xml:space="preserve">
-        <value>Экспортировать</value>
+        <value>Экспортировать расписание</value>
     </data>
 </root>

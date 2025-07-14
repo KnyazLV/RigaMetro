@@ -249,7 +249,7 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Экспортировать.
+        ///   Looks up a localized string similar to Экспортировать расписание.
         /// </summary>
         internal static string Export {
             get {

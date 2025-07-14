@@ -214,6 +214,6 @@
         <value>Remove the train?</value>
     </data>
     <data name="Export" xml:space="preserve">
-        <value>Export</value>
+        <value>Export Schedule</value>
     </data>
 </root>

@@ -1,5 +1,6 @@
 ﻿@{
   Layout = null;
+  var isRussian = CultureInfo.CurrentUICulture.TwoLetterISOLanguageName == "ru";
 }
 <!DOCTYPE html>
 <html>
@@ -11,7 +12,7 @@
   <link rel="stylesheet" href="~/lib/bootstrap/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="~/css/login.css"/>
 </head>
-<body class="login-page">
+<body class="login-page @(isRussian ? "font-cyrillic" : "font-kanit")">
 <main class="d-flex justify-content-center align-items-center vh-100">
   @RenderBody()
 </main>
