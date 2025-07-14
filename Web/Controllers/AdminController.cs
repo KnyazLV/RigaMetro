@@ -46,7 +46,7 @@ public class AdminController : Controller {
         train.IsActive = model.IsActive;
         await _db.SaveChangesAsync();
 
-        if (train.IsActive) await _scheduleService.GenerateDailyScheduleAsync(train.TrainID, DateTime.Today);
+        if (train.IsActive) await _scheduleService.GenerateDailyScheduleAsync(train.TrainID);
 
         return Ok();
     }
@@ -106,7 +106,7 @@ public class AdminController : Controller {
         await _db.SaveChangesAsync();
 
         if (train.IsActive)
-            await _scheduleService.GenerateDailyScheduleAsync(newId, DateTime.Today);
+            await _scheduleService.GenerateDailyScheduleAsync(newId);
 
         return Ok(new { newId });
     }
@@ -122,10 +122,9 @@ public class AdminController : Controller {
 
         var line = await _db.Lines.FindAsync(model.LineID);
         if (line == null) return NotFound();
-
-        var baseDate = new DateTime(2000, 1, 1);
-        line.StartWorkTime = baseDate.Add(model.StartWorkTime);
-        line.EndWorkTime   = baseDate.Add(model.EndWorkTime);
+        
+        line.StartWorkTime = model.StartWorkTime;
+        line.EndWorkTime   = model.EndWorkTime;
         line.Color = model.Color;
         await _db.SaveChangesAsync();
 
@@ -142,7 +141,7 @@ public class AdminController : Controller {
             .ToListAsync();
 
         foreach (var trainId in activeTrains) {
-            await _scheduleService.GenerateDailyScheduleAsync(trainId, DateTime.Today);
+            await _scheduleService.GenerateDailyScheduleAsync(trainId);
         }
 
         return Ok();
@@ -182,7 +181,7 @@ public class AdminController : Controller {
         // Считаем количество поездок по часам для каждой линии
         var hourlyTrips = await _db.LineSchedules
             .Where(ls => activeTrainIds.Any(trainId => ls.ScheduleID.StartsWith(trainId + "_")))
-            .GroupBy(ls => new { ls.LineID, Hour = ls.StartTime.Hour })
+            .GroupBy(ls => new { ls.LineID, Hour = ls.StartTime.Hours })
             .Select(g => new { g.Key.LineID, g.Key.Hour, Count = g.Count() })
             .ToListAsync();
 
@@ -193,6 +192,7 @@ public class AdminController : Controller {
 
         foreach (var h in hourlyTrips)
             hourlyDict[h.LineID][h.Hour] = h.Count;
+
 
         // Формируем объект для Chart.js
         var chartDto = new {
@@ -222,8 +222,8 @@ public class AdminController : Controller {
             .AsNoTracking()
             .Select(l => new LineAdminSettingsViewModel {
                 LineID = l.LineID,
-                StartWorkTime = l.StartWorkTime.TimeOfDay,
-                EndWorkTime   = l.EndWorkTime.TimeOfDay,
+                StartWorkTime = l.StartWorkTime,
+                EndWorkTime   = l.EndWorkTime,
                 Color = l.Color,
                 Name = l.Name
             })

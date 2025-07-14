@@ -9,8 +9,8 @@ public class Line {
     public string Name { get; set; } = "";
     public string Color { get; set; } = "";
     public bool IsClockwiseDirection { get; set; }
-    public DateTime StartWorkTime { get; set; }
-    public DateTime EndWorkTime { get; set; }
+    public TimeSpan StartWorkTime { get; set; }
+    public TimeSpan EndWorkTime { get; set; }
 
     // Навигационные свойства
     public ICollection<LineStation>? LineStations { get; set; }

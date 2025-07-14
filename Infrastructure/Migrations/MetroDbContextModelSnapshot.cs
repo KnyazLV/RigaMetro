@@ -32,8 +32,8 @@ namespace RigaMetro.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("EndWorkTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<TimeSpan>("EndWorkTime")
+                        .HasColumnType("time");
 
                     b.Property<bool>("IsClockwiseDirection")
                         .HasColumnType("boolean");
@@ -42,8 +42,8 @@ namespace RigaMetro.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("StartWorkTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<TimeSpan>("StartWorkTime")
+                        .HasColumnType("time");
 
                     b.HasKey("LineID");
 
@@ -54,28 +54,28 @@ namespace RigaMetro.Infrastructure.Migrations
                         {
                             LineID = "LN01",
                             Color = "#FF0000",
-                            EndWorkTime = new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndWorkTime = new TimeSpan(0, 23, 0, 0, 0),
                             IsClockwiseDirection = true,
                             Name = "Sarkandaugava–Ziepniekkalns",
-                            StartWorkTime = new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified)
+                            StartWorkTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
                             LineID = "LN02",
                             Color = "#00B050",
-                            EndWorkTime = new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndWorkTime = new TimeSpan(0, 23, 0, 0, 0),
                             IsClockwiseDirection = true,
                             Name = "Imanta–Jugla",
-                            StartWorkTime = new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified)
+                            StartWorkTime = new TimeSpan(0, 6, 0, 0, 0)
                         },
                         new
                         {
                             LineID = "LN03",
                             Color = "#0000FF",
-                            EndWorkTime = new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified),
+                            EndWorkTime = new TimeSpan(0, 23, 0, 0, 0),
                             IsClockwiseDirection = true,
                             Name = "Dreilini–Buļļu kāpa",
-                            StartWorkTime = new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified)
+                            StartWorkTime = new TimeSpan(0, 6, 0, 0, 0)
                         });
                 });
 
@@ -91,8 +91,8 @@ namespace RigaMetro.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("character varying(8)");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
 
                     b.Property<int>("TripNumber")
                         .HasColumnType("integer");
@@ -348,11 +348,11 @@ namespace RigaMetro.Infrastructure.Migrations
                     b.Property<int>("StationOrder")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("ArrivalTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<TimeSpan>("ArrivalTime")
+                        .HasColumnType("time");
 
-                    b.Property<DateTime>("DepartureTime")
-                        .HasColumnType("timestamp without time zone");
+                    b.Property<TimeSpan>("DepartureTime")
+                        .HasColumnType("time");
 
                     b.Property<string>("StationID")
                         .IsRequired()
@@ -646,7 +646,7 @@ namespace RigaMetro.Infrastructure.Migrations
                         .HasColumnType("text");
 
                     b.Property<TimeSpan>("EndWorkTime")
-                        .HasColumnType("interval");
+                        .HasColumnType("time");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("boolean");
@@ -656,7 +656,7 @@ namespace RigaMetro.Infrastructure.Migrations
                         .HasColumnType("character varying(8)");
 
                     b.Property<TimeSpan>("StartWorkTime")
-                        .HasColumnType("interval");
+                        .HasColumnType("time");
 
                     b.Property<string>("TrainName")
                         .HasColumnType("text");
@@ -666,62 +666,6 @@ namespace RigaMetro.Infrastructure.Migrations
                     b.HasIndex("LineID");
 
                     b.ToTable("Trains");
-
-                    b.HasData(
-                        new
-                        {
-                            TrainID = "TR001",
-                            EndWorkTime = new TimeSpan(0, 20, 0, 0, 0),
-                            IsActive = true,
-                            LineID = "LN01",
-                            StartWorkTime = new TimeSpan(0, 8, 0, 0, 0),
-                            TrainName = "TR–1"
-                        },
-                        new
-                        {
-                            TrainID = "TR002",
-                            EndWorkTime = new TimeSpan(0, 19, 30, 0, 0),
-                            IsActive = true,
-                            LineID = "LN01",
-                            StartWorkTime = new TimeSpan(0, 7, 30, 0, 0),
-                            TrainName = "TR–2"
-                        },
-                        new
-                        {
-                            TrainID = "TR201",
-                            EndWorkTime = new TimeSpan(0, 21, 0, 0, 0),
-                            IsActive = true,
-                            LineID = "LN02",
-                            StartWorkTime = new TimeSpan(0, 7, 0, 0, 0),
-                            TrainName = "TR–Green–1"
-                        },
-                        new
-                        {
-                            TrainID = "TR202",
-                            EndWorkTime = new TimeSpan(0, 21, 30, 0, 0),
-                            IsActive = true,
-                            LineID = "LN02",
-                            StartWorkTime = new TimeSpan(0, 7, 30, 0, 0),
-                            TrainName = "TR–Green–2"
-                        },
-                        new
-                        {
-                            TrainID = "TR301",
-                            EndWorkTime = new TimeSpan(0, 22, 0, 0, 0),
-                            IsActive = true,
-                            LineID = "LN03",
-                            StartWorkTime = new TimeSpan(0, 6, 0, 0, 0),
-                            TrainName = "TR–Blue–1"
-                        },
-                        new
-                        {
-                            TrainID = "TR302",
-                            EndWorkTime = new TimeSpan(0, 22, 30, 0, 0),
-                            IsActive = true,
-                            LineID = "LN03",
-                            StartWorkTime = new TimeSpan(0, 6, 30, 0, 0),
-                            TrainName = "TR–Blue–2"
-                        });
                 });
 
             modelBuilder.Entity("RigaMetro.Web.Models.TrainAssignment", b =>
@@ -732,10 +676,7 @@ namespace RigaMetro.Infrastructure.Migrations
                     b.Property<string>("ScheduleID")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("AssignmentDate")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.HasKey("TrainID", "ScheduleID", "AssignmentDate");
+                    b.HasKey("TrainID", "ScheduleID");
 
                     b.HasIndex("ScheduleID");
 

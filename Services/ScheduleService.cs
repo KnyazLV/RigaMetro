@@ -14,10 +14,10 @@ public class ScheduleService : IScheduleService {
         _db = db;
     }
 
-    public async Task GenerateDailyScheduleAsync(string trainId, DateTime workDate) {
+    public async Task GenerateDailyScheduleAsync(string trainId) {
         var train = await LoadTrainAsync(trainId);
         var line = await LoadLineWithStationsAsync(train.LineID);
-        var (startTime, endTime) = CalculateWorkWindow(train, line, workDate);
+        var (startTime, endTime) = CalculateWorkWindow(train, line);
 
         await RemoveExistingSchedulesAsync(trainId);
 
@@ -39,7 +39,7 @@ public class ScheduleService : IScheduleService {
             var lastDeparture = await GenerateStopsAndGetLastDepartureAsync(schedule, line, isClockwise, current);
             CreateAssignment(schedule.ScheduleID, trainId);
 
-            current = lastDeparture.AddSeconds(TurnaroundPauseSeconds);
+            current = lastDeparture + TimeSpan.FromSeconds(TurnaroundPauseSeconds);
             isClockwise = !isClockwise;
             tripNumber++;
         }
@@ -80,30 +80,28 @@ public class ScheduleService : IScheduleService {
             .FirstAsync(l => l.LineID == lineId);
     }
     
-    private (DateTime start, DateTime end) CalculateWorkWindow(Train train, Line line, DateTime workDate) {
-        var date = workDate.Date;
-        var lineStart = line.StartWorkTime.TimeOfDay;
-        var lineEnd = line.EndWorkTime.TimeOfDay;
-        var trainStart = train.StartWorkTime;
-        var trainEnd = train.EndWorkTime;
-    
-        // Обработка случая когда время переходит через полночь
+    private (TimeSpan start, TimeSpan end) CalculateWorkWindow(Train train, Line line) {
+        var lineStart = NormalizeWorkTime(line.StartWorkTime, true);
+        var lineEnd = NormalizeWorkTime(line.EndWorkTime, false);
+        var trainStart = NormalizeWorkTime(train.StartWorkTime, true);
+        var trainEnd = NormalizeWorkTime(train.EndWorkTime, false);
+
         var startOffset = lineStart > trainStart ? lineStart : trainStart;
         var endOffset = lineEnd < trainEnd ? lineEnd : trainEnd;
-    
-        // Если конечное время меньше начального, значит работа через полночь
-        if (endOffset < startOffset) {
+
+        if (endOffset < startOffset)
             endOffset = endOffset.Add(TimeSpan.FromDays(1));
-        }
-    
-        return (date + startOffset, date + endOffset);
+
+        return (startOffset, endOffset);
     }
 
-    private async Task<DateTime> GenerateStopsAndGetLastDepartureAsync(
+
+
+    private async Task<TimeSpan> GenerateStopsAndGetLastDepartureAsync(
         LineSchedule schedule,
         Line line,
         bool isClockwise,
-        DateTime departureBase) {
+        TimeSpan departureBase) {
         var travelTimes = await _db.TimeBetweenStations
             .ToListAsync();
 
@@ -119,7 +117,7 @@ public class ScheduleService : IScheduleService {
         for (var i = 0; i < ordered.Count; i++) {
             var stationId = ordered[i];
             var arrival = cursor;
-            var departure = arrival.AddSeconds(StationDwellSeconds);
+            var departure = arrival.Add(TimeSpan.FromSeconds(StationDwellSeconds));
 
             stops.Add(new ScheduleStop {
                 ScheduleID = schedule.ScheduleID,
@@ -135,7 +133,7 @@ public class ScheduleService : IScheduleService {
                                                              (t.FromStationID == next && t.ToStationID == stationId));
                 if (travel == null)
                     throw new InvalidOperationException($"Missing travel time between {stationId} and {next}");
-                cursor = departure.AddSeconds(travel.TimeSeconds);
+                cursor = departure.Add(TimeSpan.FromSeconds(travel.TimeSeconds));
             }
         }
 
@@ -147,7 +145,14 @@ public class ScheduleService : IScheduleService {
         _db.TrainAssignments.Add(new TrainAssignment {
             TrainID = trainId,
             ScheduleID = scheduleId,
-            AssignmentDate = DateTime.Today // можно убрать дату, но оставляем для совместимости
         });
+    }
+    
+    private static TimeSpan NormalizeWorkTime(TimeSpan time, bool isStart) {
+        if (time == TimeSpan.Zero)
+            return TimeSpan.FromMinutes(1); // 00:00 → 00:01
+        if (time == TimeSpan.FromHours(24))
+            return TimeSpan.FromHours(23).Add(TimeSpan.FromMinutes(59)); // 24:00 → 23:59
+        return time;
     }
 }

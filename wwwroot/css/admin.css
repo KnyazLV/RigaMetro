@@ -139,6 +139,15 @@
 
 /*#endregion*/
 
+/*#region Timepicker*/
+
+.bootstrap-timepicker-widget {
+    display: none !important;
+}
+
+
+/*#endregion*/
+
 /*#region ChartAndTables */
 
 .chart-container {

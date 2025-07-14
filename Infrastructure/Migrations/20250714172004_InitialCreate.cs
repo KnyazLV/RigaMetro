@@ -21,8 +21,8 @@ namespace RigaMetro.Infrastructure.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Color = table.Column<string>(type: "text", nullable: false),
                     IsClockwiseDirection = table.Column<bool>(type: "boolean", nullable: false),
-                    StartWorkTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    EndWorkTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    StartWorkTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    EndWorkTime = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -51,7 +51,7 @@ namespace RigaMetro.Infrastructure.Migrations
                     LineID = table.Column<string>(type: "character varying(8)", nullable: false),
                     TripNumber = table.Column<int>(type: "integer", nullable: false),
                     IsClockwise = table.Column<bool>(type: "boolean", nullable: false),
-                    StartTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    StartTime = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -71,8 +71,8 @@ namespace RigaMetro.Infrastructure.Migrations
                     TrainID = table.Column<string>(type: "text", nullable: false),
                     LineID = table.Column<string>(type: "character varying(8)", nullable: false),
                     TrainName = table.Column<string>(type: "text", nullable: true),
-                    StartWorkTime = table.Column<TimeSpan>(type: "interval", nullable: false),
-                    EndWorkTime = table.Column<TimeSpan>(type: "interval", nullable: false),
+                    StartWorkTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    EndWorkTime = table.Column<TimeSpan>(type: "time", nullable: false),
                     IsActive = table.Column<bool>(type: "boolean", nullable: false)
                 },
                 constraints: table =>
@@ -144,8 +144,8 @@ namespace RigaMetro.Infrastructure.Migrations
                     ScheduleID = table.Column<string>(type: "text", nullable: false),
                     StationOrder = table.Column<int>(type: "integer", nullable: false),
                     StationID = table.Column<string>(type: "character varying(8)", nullable: false),
-                    ArrivalTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    DepartureTime = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ArrivalTime = table.Column<TimeSpan>(type: "time", nullable: false),
+                    DepartureTime = table.Column<TimeSpan>(type: "time", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -169,12 +169,11 @@ namespace RigaMetro.Infrastructure.Migrations
                 columns: table => new
                 {
                     TrainID = table.Column<string>(type: "text", nullable: false),
-                    ScheduleID = table.Column<string>(type: "text", nullable: false),
-                    AssignmentDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                    ScheduleID = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TrainAssignments", x => new { x.TrainID, x.ScheduleID, x.AssignmentDate });
+                    table.PrimaryKey("PK_TrainAssignments", x => new { x.TrainID, x.ScheduleID });
                     table.ForeignKey(
                         name: "FK_TrainAssignments_LineSchedules_ScheduleID",
                         column: x => x.ScheduleID,
@@ -194,9 +193,9 @@ namespace RigaMetro.Infrastructure.Migrations
                 columns: new[] { "LineID", "Color", "EndWorkTime", "IsClockwiseDirection", "Name", "StartWorkTime" },
                 values: new object[,]
                 {
-                    { "LN01", "#FF0000", new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified), true, "Sarkandaugava–Ziepniekkalns", new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { "LN02", "#00B050", new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified), true, "Imanta–Jugla", new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { "LN03", "#0000FF", new DateTime(2000, 1, 1, 23, 0, 0, 0, DateTimeKind.Unspecified), true, "Dreilini–Buļļu kāpa", new DateTime(2000, 1, 1, 6, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { "LN01", "#FF0000", new TimeSpan(0, 23, 0, 0, 0), true, "Sarkandaugava–Ziepniekkalns", new TimeSpan(0, 6, 0, 0, 0) },
+                    { "LN02", "#00B050", new TimeSpan(0, 23, 0, 0, 0), true, "Imanta–Jugla", new TimeSpan(0, 6, 0, 0, 0) },
+                    { "LN03", "#0000FF", new TimeSpan(0, 23, 0, 0, 0), true, "Dreilini–Buļļu kāpa", new TimeSpan(0, 6, 0, 0, 0) }
                 });
 
             migrationBuilder.InsertData(
@@ -280,19 +279,6 @@ namespace RigaMetro.Infrastructure.Migrations
                     { "LN03", "ST308", 10 },
                     { "LN03", "ST309", 11 },
                     { "LN03", "ST310", 12 }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Trains",
-                columns: new[] { "TrainID", "EndWorkTime", "IsActive", "LineID", "StartWorkTime", "TrainName" },
-                values: new object[,]
-                {
-                    { "TR001", new TimeSpan(0, 20, 0, 0, 0), true, "LN01", new TimeSpan(0, 8, 0, 0, 0), "TR–1" },
-                    { "TR002", new TimeSpan(0, 19, 30, 0, 0), true, "LN01", new TimeSpan(0, 7, 30, 0, 0), "TR–2" },
-                    { "TR201", new TimeSpan(0, 21, 0, 0, 0), true, "LN02", new TimeSpan(0, 7, 0, 0, 0), "TR–Green–1" },
-                    { "TR202", new TimeSpan(0, 21, 30, 0, 0), true, "LN02", new TimeSpan(0, 7, 30, 0, 0), "TR–Green–2" },
-                    { "TR301", new TimeSpan(0, 22, 0, 0, 0), true, "LN03", new TimeSpan(0, 6, 0, 0, 0), "TR–Blue–1" },
-                    { "TR302", new TimeSpan(0, 22, 30, 0, 0), true, "LN03", new TimeSpan(0, 6, 30, 0, 0), "TR–Blue–2" }
                 });
 
             migrationBuilder.CreateIndex(

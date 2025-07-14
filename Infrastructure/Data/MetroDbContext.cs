@@ -18,16 +18,11 @@ public class MetroDbContext : DbContext {
     public DbSet<TrainAssignment> TrainAssignments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
-        // all DateTime mapped to timestamp without time zone
-        foreach (var property in modelBuilder.Model.GetEntityTypes()
-                     .SelectMany(t => t.GetProperties())
-                     .Where(p => p.ClrType == typeof(DateTime) || p.ClrType == typeof(DateTime?)))
-            property.SetColumnType("timestamp without time zone");
 
         modelBuilder.Entity<LineStation>().HasKey(ls => new { ls.LineID, ls.StationID });
         modelBuilder.Entity<TimeBetweenStations>().HasKey(t => new { t.FromStationID, t.ToStationID });
         modelBuilder.Entity<ScheduleStop>().HasKey(ss => new { ss.ScheduleID, ss.StationOrder });
-        modelBuilder.Entity<TrainAssignment>().HasKey(ta => new { ta.TrainID, ta.ScheduleID, ta.AssignmentDate });
+        modelBuilder.Entity<TrainAssignment>().HasKey(ta => new { ta.TrainID, ta.ScheduleID });
 
         modelBuilder.Entity<TimeBetweenStations>()
             .HasOne(t => t.FromStation)
@@ -40,23 +35,51 @@ public class MetroDbContext : DbContext {
             .WithMany(s => s.TimeTo)
             .HasForeignKey(t => t.ToStationID)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        modelBuilder.Entity<Line>()
+            .Property(l => l.StartWorkTime)
+            .HasColumnType("time");
+        modelBuilder.Entity<Line>()
+            .Property(l => l.EndWorkTime)
+            .HasColumnType("time");
+        
+        modelBuilder.Entity<Train>()
+            .Property(t => t.StartWorkTime)
+            .HasColumnType("time");
+        modelBuilder.Entity<Train>()
+            .Property(t => t.EndWorkTime)
+            .HasColumnType("time");
+
+        modelBuilder.Entity<LineSchedule>()
+            .Property(ls => ls.StartTime)
+            .HasColumnType("time");
+
+        modelBuilder.Entity<ScheduleStop>()
+            .Property(ss => ss.ArrivalTime)
+            .HasColumnType("time");
+        modelBuilder.Entity<ScheduleStop>()
+            .Property(ss => ss.DepartureTime)
+            .HasColumnType("time");
 
         // --- Seed Lines ---
         modelBuilder.Entity<Line>().HasData(
             new Line {
                 LineID = "LN01", Name = "Sarkandaugava–Ziepniekkalns", Color = "#FF0000",
                 IsClockwiseDirection = true,
-                StartWorkTime = new DateTime(2000, 1, 1, 6, 0, 0), EndWorkTime = new DateTime(2000, 1, 1, 23, 0, 0)
+                StartWorkTime =  new TimeSpan(6, 0, 0), 
+                EndWorkTime = new TimeSpan(23, 0, 0)
             },
             new Line {
                 LineID = "LN02", Name = "Imanta–Jugla", Color = "#00B050",
                 IsClockwiseDirection = true,
-                StartWorkTime = new DateTime(2000, 1, 1, 6, 0, 0), EndWorkTime = new DateTime(2000, 1, 1, 23, 0, 0)
+                StartWorkTime =  new TimeSpan(6, 0, 0), 
+                EndWorkTime = new TimeSpan(23, 0, 0)
             },
             new Line {
                 LineID = "LN03", Name = "Dreilini–Buļļu kāpa", Color = "#0000FF",
                 IsClockwiseDirection = true,
-                StartWorkTime = new DateTime(2000, 1, 1, 6, 0, 0), EndWorkTime = new DateTime(2000, 1, 1, 23, 0, 0)
+                StartWorkTime =  new TimeSpan(6, 0, 0), 
+                EndWorkTime = new TimeSpan(23, 0, 0)
             }
         );
 
@@ -146,35 +169,6 @@ public class MetroDbContext : DbContext {
             new LineStation { LineID = "LN03", StationID = "ST308", StationOrder = 10 },
             new LineStation { LineID = "LN03", StationID = "ST309", StationOrder = 11 },
             new LineStation { LineID = "LN03", StationID = "ST310", StationOrder = 12 }
-        );
-
-
-        // --- Seed Trains for all lines ---
-        modelBuilder.Entity<Train>().HasData(
-            new Train {
-                TrainID = "TR001", LineID = "LN01", TrainName = "TR–1", IsActive = true,
-                StartWorkTime = new TimeSpan(8, 0, 0), EndWorkTime = new TimeSpan(20, 0, 0)
-            },
-            new Train {
-                TrainID = "TR002", LineID = "LN01", TrainName = "TR–2", IsActive = true,
-                StartWorkTime = new TimeSpan(7, 30, 0), EndWorkTime = new TimeSpan(19, 30, 0)
-            },
-            new Train {
-                TrainID = "TR201", LineID = "LN02", TrainName = "TR–Green–1", IsActive = true,
-                StartWorkTime = new TimeSpan(7, 0, 0), EndWorkTime = new TimeSpan(21, 0, 0)
-            },
-            new Train {
-                TrainID = "TR202", LineID = "LN02", TrainName = "TR–Green–2", IsActive = true,
-                StartWorkTime = new TimeSpan(7, 30, 0), EndWorkTime = new TimeSpan(21, 30, 0)
-            },
-            new Train {
-                TrainID = "TR301", LineID = "LN03", TrainName = "TR–Blue–1", IsActive = true,
-                StartWorkTime = new TimeSpan(6, 0, 0), EndWorkTime = new TimeSpan(22, 0, 0)
-            },
-            new Train {
-                TrainID = "TR302", LineID = "LN03", TrainName = "TR–Blue–2", IsActive = true,
-                StartWorkTime = new TimeSpan(6, 30, 0), EndWorkTime = new TimeSpan(22, 30, 0)
-            }
         );
     }
 }

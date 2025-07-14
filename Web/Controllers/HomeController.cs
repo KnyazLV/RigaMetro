@@ -30,15 +30,6 @@ public class HomeController : Controller {
     #region Actions
 
     public async Task<IActionResult> Index() {
-        const string trainId = "TR001";
-        var workDate = DateTime.Today;
-
-        await _scheduleService.GenerateDailyScheduleAsync(trainId, workDate);
-        await _scheduleService.GenerateDailyScheduleAsync("TR002", workDate);
-        await _scheduleService.GenerateDailyScheduleAsync("TR201", workDate);
-        await _scheduleService.GenerateDailyScheduleAsync("TR202", workDate);
-        await _scheduleService.GenerateDailyScheduleAsync("TR301", workDate);
-        await _scheduleService.GenerateDailyScheduleAsync("TR302", workDate);
 
         var model = await CreateMapDataViewModel();
         ViewData["MapboxToken"] = _configuration["MapBox:ApiKey"];
@@ -51,18 +42,6 @@ public class HomeController : Controller {
         });
         return Redirect(Request.Headers["Referer"].ToString());
     }
-    
-    // [HttpGet]
-    // public IActionResult SetLanguage(string culture, string returnUrl = "/") {
-    //     Response.Cookies.Append(
-    //         CookieRequestCultureProvider.DefaultCookieName,
-    //         CookieRequestCultureProvider.MakeCookieValue(
-    //             new RequestCulture(culture)),
-    //         new CookieOptions { Expires = DateTimeOffset.UtcNow.AddYears(1) });
-    //
-    //     return LocalRedirect(returnUrl);
-    // }
-
 
     public async Task<IActionResult> DebugData() {
         var model = await CreateMapDataViewModel();

@@ -123,16 +123,10 @@
                             )
                         </td>
                         <td data-order="@(new DateTime(train.StartWorkTime.Ticks).ToString("HH:mm"))">
-                            <input type="time" name="StartWorkTime"
-                                   class="form-control form-control-sm"
-                                   value="@(new DateTime(train.StartWorkTime.Ticks).ToString("HH:mm"))"
-                                   disabled/>
+                            <input type="text" class="form-control timepicker" name="StartWorkTime" required value="@(new DateTime(train.StartWorkTime.Ticks).ToString("HH:mm"))" disabled/>
                         </td>
                         <td data-order="@(new DateTime(train.EndWorkTime.Ticks).ToString("HH:mm"))">
-                            <input type="time" name="EndWorkTime"
-                                   class="form-control form-control-sm"
-                                   value="@(new DateTime(train.EndWorkTime.Ticks).ToString("HH:mm"))"
-                                   disabled/>
+                            <input type="text" class="form-control timepicker" name="EndWorkTime" required value="@(new DateTime(train.EndWorkTime.Ticks).ToString("HH:mm"))" disabled/>
                         </td>
                         <td data-order="@(train.IsActive ? "Active" : "Inactive")">
                             <span class="badge @(train.IsActive ? "bg-success" : "bg-secondary") status-display">
@@ -183,11 +177,13 @@
                             </div>
                             <div class="mb-2">
                                 <label class="form-label">@Localization.GetKey("StartOfWork")</label>
-                                <input type="time" name="StartWorkTime" class="form-control" required/>
+                                <input type="text" class="form-control timepicker" name="StartWorkTime" required/>
+                                @* <input type="time" name="StartWorkTime" class="form-control" required/> *@
                             </div>
                             <div class="mb-2">
                                 <label class="form-label">@Localization.GetKey("EndOfWork")</label>
-                                <input type="time" name="EndWorkTime" class="form-control" required/>
+                                <input type="text" class="form-control timepicker" name="EndWorkTime" required/>
+                                @* <input type="time" name="EndWorkTime" class="form-control" required/> *@
                             </div>
                             <div class="mb-2">
                                 <label class="form-label">@Localization.GetKey("Status")</label>
@@ -228,16 +224,10 @@
                         <td>@line.LineID</td>
                         <td>@line.Name</td>
                         <td>
-                            <input type="time" name="StartWorkTime"
-                                   class="form-control form-control-sm"
-                                   value="@(new DateTime(line.StartWorkTime.Ticks).ToString("HH:mm"))"
-                                   disabled/>
+                            <input type="text" class="form-control form-control-sm timepicker" name="StartWorkTime" value="@(new DateTime(line.StartWorkTime.Ticks).ToString("HH:mm"))" disabled/>
                         </td>
                         <td>
-                            <input type="time" name="EndWorkTime"
-                                   class="form-control form-control-sm"
-                                   value="@(new DateTime(line.EndWorkTime.Ticks).ToString("HH:mm"))"
-                                   disabled/>
+                            <input type="text" class="form-control form-control-sm timepicker" name="EndWorkTime" value="@(new DateTime(line.EndWorkTime.Ticks).ToString("HH:mm"))" disabled/>
                         </td>
                         <td>
                             <input type="color" name="Color"
@@ -261,7 +251,7 @@
                 В разработке!
             </span>
             <span class="fs-3 text-center" style="color: #ddd;">
-                Вкладка для экспорта расписания метрополитена находится в процессе разработки.
+                @Localization.GetKey("ExportDisclaimer")
             </span>
         </div>
     </div>
@@ -303,6 +293,11 @@
             const editText = '@Html.Raw(@Localization.GetKey("Edit"))';
             const saveText = '@Html.Raw(@Localization.GetKey("Save"))';
 
+            function timeToMinutes(timeStr) {
+                const [hours, minutes] = timeStr.split(':').map(Number);
+                return hours * 60 + minutes;
+            }
+
             document.querySelectorAll('.edit-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const row = btn.closest('tr');
@@ -329,7 +324,7 @@
                         btn.textContent = saveText;
                         btn.classList.replace('btn-outline-primary', 'btn-primary');
                     } else {
-                        if (inputs.start.value >= inputs.end.value) {
+                        if (timeToMinutes(inputs.start.value) >= timeToMinutes(inputs.end.value)) {
                             alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))');
                             return;
                         }
@@ -342,6 +337,7 @@
                             EndWorkTime: inputs.end.value,
                             IsActive: inputs.statusSel.value === 'true'
                         };
+                        
 
                         fetch('/Admin/UpdateTrain', {
                             method: 'POST',
@@ -435,7 +431,7 @@
                         btn.textContent = saveText;
                         btn.classList.replace('btn-outline-primary', 'btn-primary');
                     } else {
-                        if (inputs.start.value >= inputs.end.value) {
+                        if (timeToMinutes(inputs.start.value) >= timeToMinutes(inputs.end.value)) {
                             alert('@Html.Raw(@Localization.GetKey("AlertStartTime"))');
                             return;
                         }
@@ -528,7 +524,17 @@
             setupRigaClock('riga-time-mobile', true, locale);
 
             //#endregion
-
+            
+            
+            //#region Timepicker
+            $(function(){
+                $('.timepicker').timepicker({
+                    showMeridian: false, // 24-часовой формат
+                    defaultTime: false,
+                    minuteStep: 1
+                });
+            });
+            // #endregion
         });
     </script>
 }
