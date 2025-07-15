@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Localization;
 using RigaMetro.Infrastructure.Data;
 using RigaMetro.Resources;
 using RigaMetro.Services;
@@ -278,6 +277,8 @@ public class AdminController : Controller {
     }
 
     #endregion
+    
+    
 
     #region Helpers
 

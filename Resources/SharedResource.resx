@@ -222,4 +222,7 @@
     <data name="IncorrectUsernameOrPassword" xml:space="preserve">
         <value>Incorrect username or password</value>
     </data>
+    <data name="ExportDisclaimerTitle" xml:space="preserve">
+        <value>Under development!</value>
+    </data>
 </root>

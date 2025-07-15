@@ -267,6 +267,15 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to В разработке!.
+        /// </summary>
+        internal static string ExportDisclaimerTitle {
+            get {
+                return ResourceManager.GetString("ExportDisclaimerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Ошибка при сохранении.
         /// </summary>
         internal static string FailedToSave {

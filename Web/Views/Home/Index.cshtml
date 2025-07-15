@@ -53,7 +53,6 @@
         const mapHint = document.getElementById('map-hint');
         let hintHidden = false;
         map.getCanvas().addEventListener('wheel', function(e) {
-            // Скрываем подсказку только если пользователь действительно зажал Ctrl (или Cmd на Mac)
             if ((e.ctrlKey || e.metaKey) && !hintHidden) {
                 mapHint.classList.add('hide');
                 hintHidden = true;
@@ -62,7 +61,6 @@
         });
 
 
-        // подготовка данных о линиях
         const lineInfoMap = {};
         mapData.Lines.forEach(line => {
             lineInfoMap[line.LineID] = {
@@ -74,7 +72,6 @@
         });
 
         map.on('load', () => {
-            // рендер линий
             mapData.Lines.forEach(line => {
                 const coords = line.Stations.map(s => [s.Longitude, s.Latitude]);
                 map.addSource(`line-${line.LineID}`, {
@@ -96,7 +93,6 @@
                 });
             });
 
-            // рендер станций
             const stationFeatures = [];
             mapData.Lines.forEach(line => {
                 line.Stations.forEach(s => {
@@ -132,7 +128,6 @@
                 hoverPopup.remove();
             });
 
-            // клик — рендерим столько таблиц, сколько линий в station.Schedule
             map.on('click', 'stations', e => {
                 const coords = e.features[0].geometry.coordinates.slice();
                 const stationId = e.features[0].properties.stationId;
@@ -154,7 +149,6 @@
             });
         });
 
-        // функция рендеринга — теперь цикл создаёт несколько таблиц
         function generateStationScheduleHtml(station) {
             let html = `<div class="station-schedule"><h4>${station.Name}</h4>`;
             for (const [lineId, schedule] of Object.entries(station.Schedule)) {

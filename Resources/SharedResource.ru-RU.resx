@@ -222,4 +222,7 @@
     <data name="IncorrectUsernameOrPassword" xml:space="preserve">
         <value>Неверный логин или пароль</value>
     </data>
+    <data name="ExportDisclaimerTitle" xml:space="preserve">
+        <value>В разработке!</value>
+    </data>
 </root>

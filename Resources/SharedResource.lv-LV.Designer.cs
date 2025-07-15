@@ -267,6 +267,15 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Izstrādes procesā!.
+        /// </summary>
+        internal static string ExportDisclaimerTitle {
+            get {
+                return ResourceManager.GetString("ExportDisclaimerTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Neizdevās saglabāt.
         /// </summary>
         internal static string FailedToSave {

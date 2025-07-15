@@ -1,6 +1,4 @@
-﻿// wwwroot/js/tripsPerHourChart.js
-
-const whiteBackgroundPlugin = {
+﻿const whiteBackgroundPlugin = {
   beforeDraw: chart => {
     const ctx = chart.ctx;
     ctx.save();
@@ -14,13 +12,11 @@ const whiteBackgroundPlugin = {
 function prepareDatasets(datasets) {
   return datasets.map(ds => {
     const newDs = { ...ds };
-    newDs.tension = 0.2; // Прямые линии между точками
-    newDs.fill = true; // Включить заливку под линией
+    newDs.tension = 0.2;
+    newDs.fill = true;
 
-    // Определяем базовый цвет
     let baseColor = newDs.backgroundColor || newDs.borderColor || '#1976d2';
 
-    // Если цвет задан в hex, преобразуем его в полностью прозрачный rgba
     if (typeof baseColor === 'string' && baseColor.startsWith('#')) {
       const hex = baseColor.replace('#', '');
       if (hex.length === 6) {
@@ -32,7 +28,6 @@ function prepareDatasets(datasets) {
         newDs.backgroundColor = 'rgba(25,118,210,0.10)';
       }
     } else if (typeof baseColor === 'string' && baseColor.startsWith('rgb')) {
-      // Если цвет уже rgb/rgba, просто добавим альфу если нужно
       newDs.backgroundColor = baseColor.replace(/rgba?\(([^)]+)\)/, (match, colorValues) => {
         const parts = colorValues.split(',').map(x => x.trim());
         if (parts.length === 3) {

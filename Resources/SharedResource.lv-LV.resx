@@ -222,4 +222,7 @@
     <data name="IncorrectUsernameOrPassword" xml:space="preserve">
         <value>Nepareizs lietotājvārds vai parole</value>
     </data>
+    <data name="ExportDisclaimerTitle" xml:space="preserve">
+        <value>Izstrādes procesā!</value>
+    </data>
 </root>
