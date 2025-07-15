@@ -22,6 +22,8 @@ Additional libraries and tools:
 -  DataTables.net
 
 ## Gallery
+Example of schedule on map
+[!MapSchedule](https://github.com/user-attachments/assets/a7edfad0-d075-4279-b24b-f16a91413beb)
 
 ## Installation Guide
 Also you need MapBox API Key and psql
