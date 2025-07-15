@@ -216,4 +216,7 @@
     <data name="Export" xml:space="preserve">
         <value>Экспортировать расписание</value>
     </data>
+    <data name="ScheduleNotFound" xml:space="preserve">
+        <value>Расписание отсутствует</value>
+    </data>
 </root>

@@ -216,4 +216,7 @@
     <data name="Export" xml:space="preserve">
         <value>Export Schedule</value>
     </data>
+    <data name="ScheduleNotFound" xml:space="preserve">
+        <value>There is no schedule.</value>
+    </data>
 </root>

@@ -519,6 +519,15 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nav saraksta.
+        /// </summary>
+        internal static string ScheduleNotFound {
+            get {
+                return ResourceManager.GetString("ScheduleNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Izvēlieties līniju.
         /// </summary>
         internal static string SelectALine {

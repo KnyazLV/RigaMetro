@@ -519,6 +519,15 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Расписание отсутствует.
+        /// </summary>
+        internal static string ScheduleNotFound {
+            get {
+                return ResourceManager.GetString("ScheduleNotFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Выберите линию.
         /// </summary>
         internal static string SelectALine {

@@ -144,7 +144,7 @@
                 if (!station || !station.Schedule || Object.keys(station.Schedule).length === 0) {
                     new mapboxgl.Popup({closeOnClick: true})
                         .setLngLat(coords)
-                        .setHTML('<div class="no-schedule">Расписание отсутствует</div>')
+                        .setHTML('<div class="no-schedule">@Localization.GetKey("ScheduleNotFound")</div>')
                         .addTo(map);
                     return;
                 }

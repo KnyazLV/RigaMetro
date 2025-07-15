@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Localization;
+﻿using System.Diagnostics;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
@@ -30,22 +31,56 @@ public class HomeController : Controller {
     #region Actions
 
     public async Task<IActionResult> Index() {
+        _logger.LogInformation("Loading main map page");
 
-        var model = await CreateMapDataViewModel();
-        ViewData["MapboxToken"] = _configuration["MapBox:ApiKey"];
-        return View(model);
+        try {
+            var model = await CreateMapDataViewModel();
+            ViewData["MapboxToken"] = _configuration["MapBox:ApiKey"];
+
+            _logger.LogInformation("Successfully loaded");
+            return View(model);
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to load map data");
+            throw;
+        }
     }
-    
+
+    #endregion
+
+    #region Language Management
+
+    /// <summary>
+    /// Changes the application language and redirects back to the previous page
+    /// </summary>
+    /// <param name="culture">Target culture code</param>
+    /// <returns>Redirect to previous page</returns>
     public IActionResult ChangeLanguage(string culture) {
-        Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)), new CookieOptions() {
-            Expires = DateTimeOffset.UtcNow.AddYears(1)
-        });
-        return Redirect(Request.Headers["Referer"].ToString());
-    }
+        if (string.IsNullOrEmpty(culture)) {
+            _logger.LogWarning("Attempted to change language with empty culture");
+            return BadRequest("Culture parameter is required");
+        }
 
-    public async Task<IActionResult> DebugData() {
-        var model = await CreateMapDataViewModel();
-        return View(model);
+        try {
+            var cookieValue = CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture));
+            var cookieOptions = new CookieOptions {
+                Expires = DateTimeOffset.UtcNow.AddYears(1),
+                HttpOnly = true,
+                Secure = Request.IsHttps,
+                SameSite = SameSiteMode.Lax
+            };
+
+            Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, cookieValue, cookieOptions);
+
+            _logger.LogInformation("Language changed to {Culture}", culture);
+
+            var referer = Request.Headers["Referer"].ToString();
+            return !string.IsNullOrEmpty(referer) ? Redirect(referer) : RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to change language to {Culture}", culture);
+            return RedirectToAction(nameof(Index));
+        }
     }
 
     #endregion
@@ -53,9 +88,38 @@ public class HomeController : Controller {
     #region ViewModelCreation
 
     private async Task<MapDataViewModel> CreateMapDataViewModel() {
+        _logger.LogDebug("Creating map data view model");
 
-        var trains = await _db.Trains
+        var stopwatch = Stopwatch.StartNew();
+
+        try {
+            var trains = await GetActiveTrainsAsync();
+            var scheduleStops = await GetScheduleStopsAsync();
+            var lines = await GetLinesWithStationsAsync();
+
+            var stationSchedules = BuildStationSchedules(scheduleStops);
+            var lineViewModels = BuildLineViewModels(lines, stationSchedules);
+
+            var model = new MapDataViewModel {
+                Lines = lineViewModels,
+                Trains = trains
+            };
+
+            stopwatch.Stop();
+            _logger.LogInformation("Map data view model created in {ElapsedMs}ms", stopwatch.ElapsedMilliseconds);
+
+            return model;
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to create map data view model");
+            throw;
+        }
+    }
+
+    private async Task<List<TrainViewModel>> GetActiveTrainsAsync() {
+        return await _db.Trains
             .AsNoTracking()
+            .Where(t => t.IsActive)
             .Select(t => new TrainViewModel {
                 TrainID = t.TrainID,
                 LineID = t.LineID,
@@ -65,84 +129,88 @@ public class HomeController : Controller {
                 EndWorkTime = t.EndWorkTime
             })
             .ToListAsync();
+    }
 
-        var scheduleStops = await _db.ScheduleStops
+    private async Task<List<ScheduleStop>> GetScheduleStopsAsync() {
+        return await _db.ScheduleStops
             .AsNoTracking()
             .Include(s => s.Schedule)
             .ToListAsync();
+    }
 
-        var stationSchedules = BuildStationSchedules(scheduleStops);
-
-        var lines = await _db.Lines
+    private async Task<List<Line>> GetLinesWithStationsAsync() {
+        return await _db.Lines
             .AsNoTracking()
             .Include(l => l.LineStations)
             .ThenInclude(ls => ls.Station)
             .ToListAsync();
+    }
 
+    private List<LineWithStationsViewModel> BuildLineViewModels(
+        List<Line> lines,
+        Dictionary<string, Dictionary<string, ScheduleViewModel>> stationSchedules) {
         var lineViewModels = new List<LineWithStationsViewModel>();
 
         foreach (var line in lines) {
-            var stations = line.LineStations
-                .OrderBy(ls => ls.StationOrder)
-                .Select(ls => new StationViewModel
-                {
-                    StationID = ls.StationID,
-                    Name      = ls.Station!.Name,
-                    Latitude  = ls.Station.Latitude,
-                    Longitude = ls.Station.Longitude,
-                    Order     = ls.StationOrder,
-                    Schedule  = stationSchedules.ContainsKey(ls.StationID)
-                        ? stationSchedules[ls.StationID]
-                        : new Dictionary<string, ScheduleViewModel>()
-                })
-                .ToList();
-
+            var stations = BuildStationViewModels(line, stationSchedules);
 
             lineViewModels.Add(new LineWithStationsViewModel {
                 LineID = line.LineID,
                 Name = line.Name,
                 Color = line.Color,
                 Stations = stations,
-                ClockwiseTerminal = stations.Last().Name,
-                CounterclockwiseTerminal = stations.First().Name
+                ClockwiseTerminal = stations.LastOrDefault()?.Name ?? string.Empty,
+                CounterclockwiseTerminal = stations.FirstOrDefault()?.Name ?? string.Empty
             });
         }
 
-        var model = new MapDataViewModel() {
-            Lines = lineViewModels,
-            // TimeBetween = times,
-            Trains = trains,
-        };
-        
-        return model;
+        return lineViewModels;
     }
 
+    private List<StationViewModel> BuildStationViewModels(
+        Line line,
+        Dictionary<string, Dictionary<string, ScheduleViewModel>> stationSchedules) {
+        return line.LineStations
+            .OrderBy(lineStation => lineStation.StationOrder)
+            .Select(lineStation => new StationViewModel {
+                StationID = lineStation.StationID,
+                Name = lineStation.Station?.Name ?? string.Empty,
+                Latitude = lineStation.Station?.Latitude ?? 0,
+                Longitude = lineStation.Station?.Longitude ?? 0,
+                Order = lineStation.StationOrder,
+                Schedule = stationSchedules.TryGetValue(lineStation.StationID, out var schedule)
+                    ? schedule
+                    : new Dictionary<string, ScheduleViewModel>()
+            })
+            .ToList();
+    }
 
-    private Dictionary<string, Dictionary<string, ScheduleViewModel>> BuildStationSchedules(List<ScheduleStop> stops)
-    {
+    private Dictionary<string, Dictionary<string, ScheduleViewModel>> BuildStationSchedules(List<ScheduleStop> stops) {
         var result = new Dictionary<string, Dictionary<string, ScheduleViewModel>>();
 
-        foreach (var stationGroup in stops.GroupBy(ss => ss.StationID))
-        {
-            var lineSchedules = new Dictionary<string, ScheduleViewModel>();
+        var groupedByStation = stops.GroupBy(scheduleStop => scheduleStop.StationID);
 
-            foreach (var lineGroup in stationGroup.GroupBy(ss => ss.Schedule.LineID))
-            {
-                // создаём новый ScheduleViewModel для каждой линии
-                var vm = new ScheduleViewModel();
+        foreach (var stationGroup in groupedByStation) {
+            var lineSchedules = new Dictionary<string, ScheduleViewModel>();
+            var groupedByLine = stationGroup.GroupBy(ss => ss.Schedule.LineID);
+
+            foreach (var lineGroup in groupedByLine) {
+                var viewModel = new ScheduleViewModel();
+
                 foreach (var stop in lineGroup)
-                    if (stop.Schedule.IsClockwise) vm.Clockwise.Add(stop.ArrivalTime);
-                    else vm.Counterclockwise.Add(stop.ArrivalTime);
-                lineSchedules[lineGroup.Key] = vm;
+                    if (stop.Schedule.IsClockwise)
+                        viewModel.Clockwise.Add(stop.ArrivalTime);
+                    else
+                        viewModel.Counterclockwise.Add(stop.ArrivalTime);
+
+                lineSchedules[lineGroup.Key] = viewModel;
             }
 
-            // НИКОГДА не reuse lineSchedules из предыдущей итерации
             result[stationGroup.Key] = lineSchedules;
         }
 
         return result;
     }
-
 
     #endregion
 }
