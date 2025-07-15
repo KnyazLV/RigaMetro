@@ -10,7 +10,7 @@ public class LanguageService {
     public LanguageService(IStringLocalizerFactory factory) {
         var type = typeof(SharedResource);
         var assemblyName = new AssemblyName(type.GetTypeInfo().Assembly.FullName);
-        _localizer = factory.Create("SharedResource", assemblyName.Name); // §REVIEW_DJE: "SharedResource" or "ShareResource"
+        _localizer = factory.Create("SharedResource", assemblyName.Name);
     }
     public LocalizedString GetKey(string key) {
         return _localizer[key];

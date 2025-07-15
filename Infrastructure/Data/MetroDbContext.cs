@@ -18,6 +18,7 @@ public class MetroDbContext : DbContext {
     public DbSet<TrainAssignment> TrainAssignments { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder) {
+        #region Key Configuration
 
         modelBuilder.Entity<LineStation>().HasKey(ls => new { ls.LineID, ls.StationID });
         modelBuilder.Entity<TimeBetweenStations>().HasKey(t => new { t.FromStationID, t.ToStationID });
@@ -35,14 +36,14 @@ public class MetroDbContext : DbContext {
             .WithMany(s => s.TimeTo)
             .HasForeignKey(t => t.ToStationID)
             .OnDelete(DeleteBehavior.Restrict);
-        
+
         modelBuilder.Entity<Line>()
             .Property(l => l.StartWorkTime)
             .HasColumnType("time");
         modelBuilder.Entity<Line>()
             .Property(l => l.EndWorkTime)
             .HasColumnType("time");
-        
+
         modelBuilder.Entity<Train>()
             .Property(t => t.StartWorkTime)
             .HasColumnType("time");
@@ -61,24 +62,27 @@ public class MetroDbContext : DbContext {
             .Property(ss => ss.DepartureTime)
             .HasColumnType("time");
 
-        // --- Seed Lines ---
+        #endregion
+
+        #region Seed Data
+
         modelBuilder.Entity<Line>().HasData(
             new Line {
                 LineID = "LN01", Name = "Sarkandaugava–Ziepniekkalns", Color = "#FF0000",
                 IsClockwiseDirection = true,
-                StartWorkTime =  new TimeSpan(6, 0, 0), 
+                StartWorkTime = new TimeSpan(6, 0, 0),
                 EndWorkTime = new TimeSpan(23, 0, 0)
             },
             new Line {
                 LineID = "LN02", Name = "Imanta–Jugla", Color = "#00B050",
                 IsClockwiseDirection = true,
-                StartWorkTime =  new TimeSpan(6, 0, 0), 
+                StartWorkTime = new TimeSpan(6, 0, 0),
                 EndWorkTime = new TimeSpan(23, 0, 0)
             },
             new Line {
                 LineID = "LN03", Name = "Dreilini–Buļļu kāpa", Color = "#0000FF",
                 IsClockwiseDirection = true,
-                StartWorkTime =  new TimeSpan(6, 0, 0), 
+                StartWorkTime = new TimeSpan(6, 0, 0),
                 EndWorkTime = new TimeSpan(23, 0, 0)
             }
         );
@@ -125,8 +129,6 @@ public class MetroDbContext : DbContext {
             new Station { StationID = "ST310", Name = "Buļļu kāpa", Latitude = 57.001216, Longitude = 23.987065 }
         );
 
-        // --- Seed LineStations for each line ---
-// --- Seed LineStations for each line ---
         modelBuilder.Entity<LineStation>().HasData(
             // LN01
             new LineStation { LineID = "LN01", StationID = "ST101", StationOrder = 1 },
@@ -170,5 +172,7 @@ public class MetroDbContext : DbContext {
             new LineStation { LineID = "LN03", StationID = "ST309", StationOrder = 11 },
             new LineStation { LineID = "LN03", StationID = "ST310", StationOrder = 12 }
         );
+
+        #endregion
     }
 }

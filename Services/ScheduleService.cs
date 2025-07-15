@@ -9,9 +9,11 @@ public class ScheduleService : IScheduleService {
     private const int TurnaroundPauseSeconds = 550; // pause between trips
 
     private readonly MetroDbContext _db;
+    private readonly ILogger<ScheduleService> _logger;
 
-    public ScheduleService(MetroDbContext db) {
+    public ScheduleService(MetroDbContext db, ILogger<ScheduleService> logger) {
         _db = db;
+        _logger = logger;
     }
 
     public async Task GenerateDailyScheduleAsync(string trainId) {
@@ -26,7 +28,6 @@ public class ScheduleService : IScheduleService {
         var current = startTime;
 
         while (current < endTime) {
-            // ScheduleID без даты
             var schedule = new LineSchedule {
                 ScheduleID = $"{trainId}_{tripNumber}",
                 LineID = line.LineID,
@@ -45,10 +46,13 @@ public class ScheduleService : IScheduleService {
         }
 
         await _db.SaveChangesAsync();
+        _logger.LogInformation("Schedule generation for train {TrainID} complete.", trainId);
     }
 
-    // Убираем учёт даты при удалении — удаляем все старые рейсы по TrainID
+    #region Helpers
+    
     private async Task RemoveExistingSchedulesAsync(string trainId) {
+        _logger.LogInformation("Removing previous schedules for train {TrainID}", trainId);
         var assignments = await _db.TrainAssignments
             .Where(ta => ta.TrainID == trainId)
             .ToListAsync();
@@ -69,8 +73,10 @@ public class ScheduleService : IScheduleService {
     }
 
     private async Task<Train> LoadTrainAsync(string trainId) {
-        return await _db.Trains.FindAsync(trainId)
-               ?? throw new InvalidOperationException($"Train '{trainId}' not found");
+        var train = await _db.Trains.FindAsync(trainId);
+        if (train != null) return train;
+        _logger.LogError("Train '{TrainID}' not found", trainId);
+        throw new InvalidOperationException($"Train '{trainId}' not found");
     }
 
     private async Task<Line> LoadLineWithStationsAsync(string lineId) {
@@ -94,8 +100,6 @@ public class ScheduleService : IScheduleService {
 
         return (startOffset, endOffset);
     }
-
-
 
     private async Task<TimeSpan> GenerateStopsAndGetLastDepartureAsync(
         LineSchedule schedule,
@@ -155,4 +159,6 @@ public class ScheduleService : IScheduleService {
             return TimeSpan.FromHours(23).Add(TimeSpan.FromMinutes(59)); // 24:00 → 23:59
         return time;
     }
+    
+    #endregion
 }

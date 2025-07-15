@@ -219,4 +219,7 @@
     <data name="ScheduleNotFound" xml:space="preserve">
         <value>Расписание отсутствует</value>
     </data>
+    <data name="IncorrectUsernameOrPassword" xml:space="preserve">
+        <value>Неверный логин или пароль</value>
+    </data>
 </root>

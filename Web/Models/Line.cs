@@ -11,8 +11,7 @@ public class Line {
     public bool IsClockwiseDirection { get; set; }
     public TimeSpan StartWorkTime { get; set; }
     public TimeSpan EndWorkTime { get; set; }
-
-    // Навигационные свойства
+    
     public ICollection<LineStation>? LineStations { get; set; }
     public ICollection<Train>? Trains { get; set; }
     public ICollection<LineSchedule>? LineSchedules { get; set; }

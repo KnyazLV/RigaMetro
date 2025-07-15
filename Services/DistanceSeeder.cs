@@ -6,12 +6,20 @@ namespace RigaMetro.Services;
 
 public class DistanceSeeder {
     private readonly MetroDbContext _db;
+    private readonly ILogger<DistanceSeeder> _logger;
 
-    public DistanceSeeder(MetroDbContext db) {
+
+    public DistanceSeeder(MetroDbContext db, ILogger<DistanceSeeder> logger) {
         _db = db;
+        _logger = logger;
     }
 
+
+    /// <summary>
+    /// Fills the table with distances and travel times between adjacent stations.
+    /// </summary>
     public async Task SeedAsync() {
+        _logger.LogInformation("Starting distance seeding...");
         var lines = await _db.Lines
             .Include(l => l.LineStations.OrderBy(ls => ls.StationOrder))
             .ThenInclude(ls => ls.Station)
@@ -61,8 +69,11 @@ public class DistanceSeeder {
         }
 
         if (toInsert.Any()) {
+            _logger.LogInformation("Inserting {Count} distance entries", toInsert.Count);
             await _db.TimeBetweenStations.AddRangeAsync(toInsert);
             await _db.SaveChangesAsync();
+        } else {
+            _logger.LogInformation("No new distances to insert.");
         }
     }
 

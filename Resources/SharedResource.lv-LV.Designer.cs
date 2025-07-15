@@ -294,6 +294,15 @@ namespace RigaMetro.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Nepareizs lietotājvārds vai parole.
+        /// </summary>
+        internal static string IncorrectUsernameOrPassword {
+            get {
+                return ResourceManager.GetString("IncorrectUsernameOrPassword", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Garums, km.
         /// </summary>
         internal static string LengthKm {

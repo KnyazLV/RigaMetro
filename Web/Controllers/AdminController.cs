@@ -24,188 +24,166 @@ public class AdminController : Controller {
         _logger = logger;
     }
 
+    #region Main Action
 
     public async Task<IActionResult> Index() {
-        var model = await CreateAdminDataAsync();
-        return View(model);
+        try {
+            _logger.LogInformation("Loading admin dashboard");
+            var model = await CreateAdminDataAsync();
+            return View(model);
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to load admin dashboard");
+            throw;
+        }
     }
+
+    #endregion
+
+    #region Train CRUD
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateTrain([FromBody] TrainViewModel model) {
-        if (model.StartWorkTime >= model.EndWorkTime)
-            return BadRequest("StartWorkTime must be earlier than EndWorkTime");
+        try {
+            _logger.LogInformation("Updating train {TrainId}", model.TrainID);
 
-        var train = await _db.Trains.FindAsync(model.TrainID);
-        if (train == null) return NotFound();
+            var validationResult = ValidateTimes(model.StartWorkTime, model.EndWorkTime);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Message);
 
-        train.TrainName = model.TrainName;
-        train.LineID = model.LineID;
-        train.StartWorkTime = model.StartWorkTime;
-        train.EndWorkTime = model.EndWorkTime;
-        train.IsActive = model.IsActive;
-        await _db.SaveChangesAsync();
+            var train = await _db.Trains.FindAsync(model.TrainID);
+            if (train == null) {
+                _logger.LogWarning("Train {TrainId} not found for update", model.TrainID);
+                return NotFound();
+            }
 
-        if (train.IsActive) await _scheduleService.GenerateDailyScheduleAsync(train.TrainID);
+            await UpdateTrainEntity(train, model);
+            await _db.SaveChangesAsync();
 
-        return Ok();
+            if (train.IsActive)
+                await _scheduleService.GenerateDailyScheduleAsync(train.TrainID);
+
+            _logger.LogInformation("Train {TrainId} updated successfully", model.TrainID);
+            return Ok();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to update train {TrainId}", model.TrainID);
+            return StatusCode(500, "Failed to update train");
+        }
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteTrain([FromBody] string id) {
-        // Удалить все связанные расписания, остановки и назначения
-        var assignments = await _db.TrainAssignments.Where(a => a.TrainID == id).ToListAsync();
-        var scheduleIds = assignments.Select(a => a.ScheduleID).ToList();
-        var stops = await _db.ScheduleStops.Where(s => scheduleIds.Contains(s.ScheduleID)).ToListAsync();
-        var schedules = await _db.LineSchedules.Where(s => scheduleIds.Contains(s.ScheduleID)).ToListAsync();
+        try {
+            _logger.LogInformation("Deleting train {TrainId}", id);
 
-        _db.ScheduleStops.RemoveRange(stops);
-        _db.TrainAssignments.RemoveRange(assignments);
-        _db.LineSchedules.RemoveRange(schedules);
+            if (string.IsNullOrEmpty(id))
+                return BadRequest("Train ID is required");
 
-        var train = await _db.Trains.FindAsync(id);
-        if (train == null)
-            return NotFound("Поезд не найден");
-        _db.Trains.Remove(train);
+            var train = await _db.Trains.FindAsync(id);
+            if (train == null) {
+                _logger.LogWarning("Train {TrainId} not found for deletion", id);
+                return NotFound("Train not found");
+            }
 
-        await _db.SaveChangesAsync();
-        return Ok();
+            await DeleteTrainWithRelatedData(id);
+            await _db.SaveChangesAsync();
+
+            _logger.LogInformation("Train {TrainId} deleted successfully", id);
+            return Ok();
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to delete train {TrainId}", id);
+            return StatusCode(500, "Failed to delete train");
+        }
     }
 
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateTrain([FromBody] TrainViewModel model) {
-        if (model.StartWorkTime >= model.EndWorkTime)
-            return BadRequest("StartWorkTime must be earlier than EndWorkTime");
+        try {
+            _logger.LogInformation("Creating new train for line {LineId}", model.LineID);
 
-        var lineNumber = int.Parse(model.LineID.Substring(model.LineID.Length - 2)); // LN02 -> 2
+            var validationResult = ValidateTimes(model.StartWorkTime, model.EndWorkTime);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Message);
 
-        var existingTrains = await _db.Trains
-            .Where(t => t.TrainID.StartsWith($"TR{lineNumber}"))
-            .ToListAsync();
+            var newId = await GenerateTrainId(model.LineID);
+            if (string.IsNullOrEmpty(newId))
+                return BadRequest("Failed to generate train ID");
 
-        var maxNum = existingTrains
-            .Select(t => int.TryParse(t.TrainID.Substring(3), out var n) ? n : 0)
-            .DefaultIfEmpty(0)
-            .Max();
-        var newNum = maxNum + 1;
-        var newId = $"TR{lineNumber}{newNum:00}";
+            var train = CreateTrainEntity(newId, model);
+            _db.Trains.Add(train);
+            await _db.SaveChangesAsync();
 
+            if (train.IsActive)
+                await _scheduleService.GenerateDailyScheduleAsync(newId);
 
-        var train = new Train {
-            TrainID = newId,
-            TrainName = model.TrainName,
-            LineID = model.LineID,
-            StartWorkTime = model.StartWorkTime,
-            EndWorkTime = model.EndWorkTime,
-            IsActive = model.IsActive
-        };
-        _db.Trains.Add(train);
-        await _db.SaveChangesAsync();
-
-        if (train.IsActive)
-            await _scheduleService.GenerateDailyScheduleAsync(newId);
-
-        return Ok(new { newId });
+            _logger.LogInformation("Train {TrainId} created successfully", newId);
+            return Ok(new { newId });
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to create train for line {LineId}", model.LineID);
+            return StatusCode(500, "Failed to create train");
+        }
     }
-    
+
+    #endregion
+
+    #region Line CRUD
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> UpdateLine([FromBody] LineAdminSettingsViewModel model) {
-        if (model == null)
-            return BadRequest("Модель обновления не передана");
+        try {
+            _logger.LogInformation("Updating line {LineId}", model.LineID);
 
-        if (model.StartWorkTime >= model.EndWorkTime)
-            return BadRequest("StartWorkTime must be earlier than EndWorkTime");
+            if (model == null)
+                return BadRequest("Line model is required");
 
-        var line = await _db.Lines.FindAsync(model.LineID);
-        if (line == null) return NotFound();
-        
-        line.StartWorkTime = model.StartWorkTime;
-        line.EndWorkTime   = model.EndWorkTime;
-        line.Color = model.Color;
-        await _db.SaveChangesAsync();
+            var validationResult = ValidateTimes(model.StartWorkTime, model.EndWorkTime);
+            if (!validationResult.IsValid)
+                return BadRequest(validationResult.Message);
 
-        var schedules = await _db.LineSchedules
-            .Where(s => s.LineID == line.LineID)
-            .ToListAsync();
-        
-        _db.LineSchedules.RemoveRange(schedules);
-        await _db.SaveChangesAsync();
+            var line = await _db.Lines.FindAsync(model.LineID);
+            if (line == null) {
+                _logger.LogWarning("Line {LineId} not found for update", model.LineID);
+                return NotFound();
+            }
 
-        var activeTrains = await _db.Trains
-            .Where(t => t.LineID == line.LineID && t.IsActive)
-            .Select(t => t.TrainID)
-            .ToListAsync();
+            await UpdateLineEntity(line, model);
+            await RegenerateLineSchedules(line.LineID);
 
-        foreach (var trainId in activeTrains) {
-            await _scheduleService.GenerateDailyScheduleAsync(trainId);
+            _logger.LogInformation("Line {LineId} updated successfully", model.LineID);
+            return Ok();
         }
-
-        return Ok();
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to update line {LineId}", model.LineID);
+            return StatusCode(500, "Failed to update line");
+        }
     }
-    
+
+    #endregion
+
+    #region Data for ViewModels
+
     private async Task<AdminDataViewModel> CreateAdminDataAsync() {
         var totalLines = await _db.Lines.CountAsync();
         var totalStations = await _db.Stations.CountAsync();
         var totalTrains = await _db.Trains.CountAsync();
         var activeTrains = await _db.Trains.CountAsync(t => t.IsActive);
-        
+
         var activeTrainIds = await _db.Trains
             .Where(t => t.IsActive)
             .Select(t => t.TrainID)
             .ToListAsync();
 
-        var lineStats = await _db.Lines
-            .Include(l => l.LineStations)
-            .Include(l => l.Trains)
-            .Select(l => new LineStatisticsViewModel {
-                LineID = l.LineID,
-                LineName = l.Name,
-                LineColor = l.Color,
-                StationCount = l.LineStations.Count,
-                TotalDistanceKm = l.LineStations
-                    .Join(_db.TimeBetweenStations,
-                        ls => ls.StationID,
-                        t => t.FromStationID,
-                        (ls, t) => t.DistanceM)
-                    .Sum() / 1000.0,
-                AssignedTrainsCount = l.Trains.Count(t => t.IsActive),
-                DailyTripsCount = _db.LineSchedules.Count(s => s.LineID == l.LineID && 
-                                                               activeTrainIds.Any(trainId => s.ScheduleID.StartsWith(trainId + "_")))
-            })
-            .ToListAsync();
-
-        // Считаем количество поездок по часам для каждой линии
-        var hourlyTrips = await _db.LineSchedules
-            .Where(ls => activeTrainIds.Any(trainId => ls.ScheduleID.StartsWith(trainId + "_")))
-            .GroupBy(ls => new { ls.LineID, Hour = ls.StartTime.Hours })
-            .Select(g => new { g.Key.LineID, g.Key.Hour, Count = g.Count() })
-            .ToListAsync();
-
-        // Заполняем словарь <LineID, int[24]>
-        var hourlyDict = lineStats.ToDictionary(
-            ls => ls.LineID,
-            _ => Enumerable.Repeat(0, 24).ToArray());
-
-        foreach (var h in hourlyTrips)
-            hourlyDict[h.LineID][h.Hour] = h.Count;
-
-
-        // Формируем объект для Chart.js
-        var chartDto = new {
-            labels = Enumerable.Range(0, 24).Select(i => i.ToString("00")),
-            datasets = lineStats.Select(ls => new {
-                label = ls.LineName,
-                data = hourlyDict[ls.LineID],
-                borderColor = ls.LineColor,
-                backgroundColor = ls.LineColor,
-                tension = 0.3,
-                fill = false
-            })
-        };
+        var lineStats = await BuildLineStatistics(activeTrainIds);
+        var hourlyTrips = await BuildHourlyTripsData(activeTrainIds);
+        var chartData = CreateChartData(lineStats, hourlyTrips);
 
         var statsVm = new AdminStatisticsViewModel {
             TotalLines = totalLines,
@@ -215,7 +193,7 @@ public class AdminController : Controller {
             TotalNetworkDistanceKm = lineStats.Sum(s => s.TotalDistanceKm),
             TotalDailyTrips = lineStats.Sum(s => s.DailyTripsCount),
             LineStatistics = lineStats,
-            TripsPerLineHourlyJson = JsonSerializer.Serialize(chartDto)
+            TripsPerLineHourlyJson = JsonSerializer.Serialize(chartData)
         };
 
         var lines = await _db.Lines
@@ -223,7 +201,7 @@ public class AdminController : Controller {
             .Select(l => new LineAdminSettingsViewModel {
                 LineID = l.LineID,
                 StartWorkTime = l.StartWorkTime,
-                EndWorkTime   = l.EndWorkTime,
+                EndWorkTime = l.EndWorkTime,
                 Color = l.Color,
                 Name = l.Name
             })
@@ -247,4 +225,153 @@ public class AdminController : Controller {
             Trains = trains
         };
     }
+
+    private async Task<List<LineStatisticsViewModel>> BuildLineStatistics(List<string> activeTrainIds) {
+        return await _db.Lines
+            .Include(l => l.LineStations)
+            .Include(l => l.Trains)
+            .Select(l => new LineStatisticsViewModel {
+                LineID = l.LineID,
+                LineName = l.Name,
+                LineColor = l.Color,
+                StationCount = l.LineStations.Count,
+                TotalDistanceKm = l.LineStations
+                    .Join(_db.TimeBetweenStations,
+                        ls => ls.StationID,
+                        t => t.FromStationID,
+                        (ls, t) => t.DistanceM)
+                    .Sum() / 1000.0,
+                AssignedTrainsCount = l.Trains.Count(t => t.IsActive),
+                DailyTripsCount = _db.LineSchedules.Count(s => s.LineID == l.LineID &&
+                                                               activeTrainIds.Any(trainId => s.ScheduleID.StartsWith(trainId + "_")))
+            })
+            .ToListAsync();
+    }
+
+    private async Task<List<dynamic>> BuildHourlyTripsData(List<string> activeTrainIds) {
+        return await _db.LineSchedules
+            .Where(ls => activeTrainIds.Any(trainId => ls.ScheduleID.StartsWith(trainId + "_")))
+            .GroupBy(ls => new { ls.LineID, Hour = ls.StartTime.Hours })
+            .Select(g => new { g.Key.LineID, g.Key.Hour, Count = g.Count() })
+            .ToListAsync<dynamic>();
+    }
+
+    private object CreateChartData(List<LineStatisticsViewModel> lineStats, List<dynamic> hourlyTrips) {
+        var hourlyDict = lineStats.ToDictionary(
+            ls => ls.LineID,
+            _ => Enumerable.Repeat(0, 24).ToArray());
+
+        foreach (var h in hourlyTrips)
+            hourlyDict[h.LineID][h.Hour] = h.Count;
+
+        return new {
+            labels = Enumerable.Range(0, 24).Select(i => i.ToString("00")),
+            datasets = lineStats.Select(ls => new {
+                label = ls.LineName,
+                data = hourlyDict[ls.LineID],
+                borderColor = ls.LineColor,
+                backgroundColor = ls.LineColor,
+                tension = 0.3,
+                fill = false
+            })
+        };
+    }
+
+    #endregion
+
+    #region Helpers
+
+    private (bool IsValid, string Message) ValidateTimes(TimeSpan startTime, TimeSpan endTime) {
+        if (startTime >= endTime)
+            return (false, "Start time must be earlier than end time");
+
+        return (true, string.Empty);
+    }
+
+    private async Task UpdateTrainEntity(Train train, TrainViewModel model) {
+        train.TrainName = model.TrainName;
+        train.LineID = model.LineID;
+        train.StartWorkTime = model.StartWorkTime;
+        train.EndWorkTime = model.EndWorkTime;
+        train.IsActive = model.IsActive;
+    }
+
+    private async Task DeleteTrainWithRelatedData(string trainId) {
+        var assignments = await _db.TrainAssignments.Where(a => a.TrainID == trainId).ToListAsync();
+        var scheduleIds = assignments.Select(a => a.ScheduleID).ToList();
+
+        if (scheduleIds.Any()) {
+            var stops = await _db.ScheduleStops.Where(s => scheduleIds.Contains(s.ScheduleID)).ToListAsync();
+            var schedules = await _db.LineSchedules.Where(s => scheduleIds.Contains(s.ScheduleID)).ToListAsync();
+
+            _db.ScheduleStops.RemoveRange(stops);
+            _db.LineSchedules.RemoveRange(schedules);
+        }
+
+        _db.TrainAssignments.RemoveRange(assignments);
+
+        var train = await _db.Trains.FindAsync(trainId);
+        if (train != null)
+            _db.Trains.Remove(train);
+    }
+
+    private async Task<string> GenerateTrainId(string lineId) {
+        try {
+            if (string.IsNullOrEmpty(lineId) || lineId.Length < 4)
+                return null;
+
+            var lineNumber = int.Parse(lineId.Substring(lineId.Length - 2));
+            var existingTrains = await _db.Trains
+                .Where(t => t.TrainID.StartsWith($"TR{lineNumber}"))
+                .ToListAsync();
+
+            var maxNum = existingTrains
+                .Select(t => int.TryParse(t.TrainID.Substring(3), out var n) ? n : 0)
+                .DefaultIfEmpty(0)
+                .Max();
+
+            var newNum = maxNum + 1;
+            return $"TR{lineNumber}{newNum:00}";
+        }
+        catch (Exception ex) {
+            _logger.LogError(ex, "Failed to generate train ID for line {LineId}", lineId);
+            return null;
+        }
+    }
+
+    private Train CreateTrainEntity(string trainId, TrainViewModel model) {
+        return new Train {
+            TrainID = trainId,
+            TrainName = model.TrainName,
+            LineID = model.LineID,
+            StartWorkTime = model.StartWorkTime,
+            EndWorkTime = model.EndWorkTime,
+            IsActive = model.IsActive
+        };
+    }
+
+    private async Task UpdateLineEntity(Line line, LineAdminSettingsViewModel model) {
+        line.StartWorkTime = model.StartWorkTime;
+        line.EndWorkTime = model.EndWorkTime;
+        line.Color = model.Color;
+        await _db.SaveChangesAsync();
+    }
+
+    private async Task RegenerateLineSchedules(string lineId) {
+        var schedules = await _db.LineSchedules
+            .Where(s => s.LineID == lineId)
+            .ToListAsync();
+
+        _db.LineSchedules.RemoveRange(schedules);
+        await _db.SaveChangesAsync();
+
+        var activeTrains = await _db.Trains
+            .Where(t => t.LineID == lineId && t.IsActive)
+            .Select(t => t.TrainID)
+            .ToListAsync();
+
+        foreach (var trainId in activeTrains) await _scheduleService.GenerateDailyScheduleAsync(trainId);
+    }
+
+    #endregion
 }
