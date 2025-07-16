@@ -14,13 +14,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Database Configuration
 var connectionString = builder.Configuration.GetConnectionString("MetroConnection");
-builder.Services.AddDbContext<MetroDbContext>(options =>
-    options.UseNpgsql(connectionString));
+builder.Services.AddDbContext<MetroDbContext>(options => options.UseNpgsql(connectionString));
 
 // Authentication Configuration
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
+    .AddCookie(options => {
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
         options.AccessDeniedPath = "/Account/AccessDenied";
@@ -78,13 +76,23 @@ app.UseAuthorization();
 
 // Routing
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    "default",
+    "{controller=Home}/{action=Index}/{id?}");
 
-// Database Seeding
+// Database Migration and Seeding
 using (var scope = app.Services.CreateScope()) {
-    var seeder = scope.ServiceProvider.GetRequiredService<DistanceSeeder>();
-    await seeder.SeedAsync();
+    var services = scope.ServiceProvider;
+    try {
+        var context = services.GetRequiredService<MetroDbContext>();
+        await context.Database.MigrateAsync();
+
+        var seeder = services.GetRequiredService<DistanceSeeder>();
+        await seeder.SeedAsync();
+    }
+    catch (Exception ex) {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred during database migration or seeding.");
+    }
 }
 
 app.Run();

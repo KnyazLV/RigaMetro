@@ -1,0 +1,34 @@
+﻿services:
+  webapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: my-aspnet-app
+    restart: always
+    ports:
+      - 8080:8080
+    env_file:
+      - .secrets
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  db:
+    image: postgres:17.4-alpine
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: vx1nlCQQ1MLG2b
+      POSTGRES_DB: riga_metro
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d riga_metro"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
