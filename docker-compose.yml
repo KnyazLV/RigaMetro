@@ -19,7 +19,7 @@
     restart: always
     environment:
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: vx1nlCQQ1MLG2b
+      POSTGRES_PASSWORD: admin
       POSTGRES_DB: riga_metro
     volumes:
       - postgres_data:/var/lib/postgresql/data

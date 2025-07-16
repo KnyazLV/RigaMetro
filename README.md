@@ -1,70 +1,142 @@
-# Project description | Riga Metro
+# Riga Metro — Educational ASP.NET Core MVC Application
 
-An ASP.NET Core MVC application for educational purposes. The application allows you to explore a map of the non-existent Riga Metro. The map of stations and lines is based on a real metro project. 
+Riga Metro is a demonstration ASP.NET Core MVC application modeling a fictional Riga underground system. It lets you explore an interactive metro map, simulate train schedules, and manage system data through an admin panel.
 
-The project includes metro management via an admin panel. The administrator can change the operating hours of the lines and the number of trains on each of them. The train arrival schedule at the station is generated automatically.
+## Demo
+
+**Live Demo:**  
+Available: https://rigametro.knyaz.eu/
+
+## Overview
+
+- **Interactive Metro Map:** Visualizes a metro network based on Riga’s unrealized metro plans.
+- **Admin Management:** Administrators adjust line schedules, manage train counts, and regenerate schedules in real time.
+- **Real-Time Simulation:** Train arrivals and timetables are calculated dynamically using geospatial data and operational constraints.
 
 ## Features
-- **Automatic Schedule Generation**: Train timetables are calculated dynamically, considering the real geodesic distance between stations, time spent at stations, turnaround intervals at line terminals, and working hours of both trains and lines.
-- **Comprehensive Metro Statistics**: Real-time statistics about metro line activity are generated and conveniently visualized on the admin dashboard, including charts and structured tables.
-- **Multilingual Support**: The site is fully localized for three languages: Russian, Latvian, and English. All UI elements and error/help messages are presented in the selected language.
-- **Automatic Database Setup**: The database is automatically initialized with all required lines, stations, and connections thanks to Entity Framework migrations and seed data.
-## Technologies
-Core technologies:
-1. ASP.NET Core MVC
-2. PostgreSQL (via Entity Framework Core)
-3. MapBox GL JS
 
-Additional libraries and tools:
-- Bootstrap 5
--  jQuery
--  Chart.js
--  DataTables.net
+- **Dynamic Schedule Generation:**
+    - Algorithms calculate train timetables based on true geodesic distances, time at stations, turnaround intervals, and line/train working hours.
+- **Metro Statistics Dashboard:**
+    - Charts and tables display system load, train utilization, and key metrics for each line.
+- **Multilingual UI:**
+    - Full localization in English, Russian, and Latvian, including UI, validation, and error/help messages.
+- **Effortless Database Initialization:**
+    - Entity Framework Core migrations seed the database with all required lines, stations, and reference data on first launch.
 
-## Gallery
-Example of schedule on map
-[!MapSchedule](https://github.com/user-attachments/assets/a7edfad0-d075-4279-b24b-f16a91413beb)
+## Demo Gallery
 
-## Installation Guide
-Also you need MapBox API Key and psql
-1. Clone the Repository
-```
-git clone https://github.com/YourName/RigaMetro.git
-cd RigaMetro
-```
-2. Build the Project
-```
-dotnet build
-dotnet ef database update
-```
-3. Run Application
-```
-dotnet run
-```
+![Map](https://imgur.com/1OKZzHH.png)
+ 
+![Trains](https://i.imgur.com/C8WEKCc.png)
+
+![Dashboard](https://imgur.com/i7kIXVx.png)
+
+![Lines](https://imgur.com/NqHuBEv.png)
+
+![Schedule](https://imgur.com/oXN9Vjs.png)
+
+## Getting Started
+
+### Requirements
+
+- **.NET SDK 9.0**
+- **PostgreSQL 17.4**
+- **Docker + Docker Compose (for container-based deployment)**
+
+### Quickstart (Docker Compose)
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/YourName/RigaMetro.git
+   cd RigaMetro
+   ```
+2. **Create a `.secrets` file**  
+   Insert your MapBox API key (and psql connection string) as environment variables, e.g.:
+   ```
+   MapBox__ApiKey=[YOUR_MAPBOX_TOKEN]
+   ConnectionStrings__MetroConnection=Host=db;Database=riga_metro;Username=admin;Password=admin
+   AdminCredentials__Username=[YOUR_USERNAME]
+   AdminCredentials__Password=[YOUR_PASSWORD]
+   ```
+3. **Launch with Docker Compose**
+   ```bash
+   sudo docker compose up
+   ```
+   This will build images, create the database, apply migrations, and seed all initial data.
+4. **Open the app**  
+   Visit [http://localhost:8080](http://localhost:8080)
+
+### Manual Build & Local Run
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/YourName/RigaMetro.git
+   cd RigaMetro
+   ```
+2. **Restore NuGet Packages**
+   ```bash
+   dotnet restore
+   ```
+3. **Build the Project**
+   ```bash
+   dotnet publish -c Release -o ./publish
+   ```
+4. **Setup Secrets (User Secrets Provider)**
+   ```bash
+   dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Database=riga_metro;Username=admin;Password=admin"
+   dotnet user-secrets set "MapBox:ApiKey" "[YOUR_MAPBOX_TOKEN]"
+   dotnet user-secrets set "AdminCredentials:Username" "admin"
+   dotnet user-secrets set "AdminCredentials:Password" "admin"
+   ```
+5. **Apply Database Migrations**
+   (If running locally _outside_ Docker, you may need to create the database and apply migrations manually, depending on your configuration.)
+   ```bash
+   dotnet ef database update --project Infrastructure
+   ```
+6. **Run the Application**
+   ```bash
+   dotnet ./publish/RigaMetro.dll
+   ```
+
+---
+
 ## Project Structure
-```
-├───Infrastructure
-│   ├───Data             # DbContext, EF Core
-│   └───Migrations       # DB Migrations
-├───Properties           # Project Settings (launchSettings, AssemblyInfo etc.)
-├───Resources            # .resx-files for localization
-├───Services             # Business logic: schedules, seeders
-├───Web
-│   ├───Controllers      # MVC-controllers
-│   ├───Models
-│   │   └───ViewModels   # ViewModel-objects (subfolder division Account/Admin/Schedule)
-│   └───Views
-│       ├───Account
-│       ├───Admin
-│       ├───Home
-│       └───Shared
-└───wwwroot
-    ├───css              # CSS Styles for UI
-    ├───images           # Icons and logo
-    ├───js               # Custom JS-modules (Mapbox, line-crud, train-crud etc.)
-    └───lib
-        ├───bootstrap    # Third-party libraries JS and CSS
-        ├───jquery-validation
-        └───jquery-validation-unobtrusive
 
 ```
+├── Infrastructure
+│   ├── Data             # DbContext & EF Core setup
+│   └── Migrations       # EF Core migrations
+├── Properties           # Project settings (launch, assembly info)
+├── Resources            # Localization (.resx) files
+├── Services             # Business logic: scheduling, data seeders, etc.
+├── Web
+│   ├── Controllers      # MVC controllers
+│   ├── Models
+│   │   └── ViewModels   # Specialized view models (Account, Admin, Schedule)
+│   └── Views
+│       ├── Account
+│       ├── Admin
+│       ├── Home
+│       └── Shared
+└── wwwroot
+    ├── css              # UI styles
+    ├── images           # Icons & logos
+    ├── js               # Custom JS modules (map, CRUD interfaces)
+    └── lib
+        ├── bootstrap
+        ├── jquery-validation
+        └── jquery-validation-unobtrusive
+```
+
+## Technologies Used
+
+- **Backend:** ASP.NET Core MVC, EF Core (PostgreSQL)
+- **Frontend:** Bootstrap 5, MapBox GL JS, jQuery, Chart.js, DataTables.net
+- **Localization:** Resx-resource-based i18n (English, Russian, Latvian)
+- **Containerization:** Docker, Docker Compose
+
+## Notes
+
+- _First-time run_ automatically sets up schema and initial data thanks to migrations and data seeding.
+- _Admin panel_ available at `/Admin` (credentials are set via secrets).
