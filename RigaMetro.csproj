@@ -37,7 +37,6 @@
 
     <ItemGroup>
       <AdditionalFiles Include="Web\Views\Admin\Index.cshtml" />
-      <AdditionalFiles Include="Web\Views\Home\DebugData.cshtml" />
       <AdditionalFiles Include="Web\Views\Home\Index.cshtml" />
       <AdditionalFiles Include="Web\Views\Shared\_Layout.cshtml" />
       <AdditionalFiles Include="Web\Views\_ViewImports.cshtml" />
